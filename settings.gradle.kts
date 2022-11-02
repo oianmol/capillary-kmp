@@ -5,12 +5,13 @@ pluginManagement {
         gradlePluginPortal()
         mavenCentral()
     }
-    resolutionStrategy {
-        eachPlugin {
-            if (requested.id.namespace == "com.android" || requested.id.name == "kotlin-android-extensions") {
-                useModule("com.android.tools.build:gradle:7.0.4")
-            }
-        }
+
+    plugins {
+        kotlin("jvm") version "1.7.20"
+        kotlin("native.cocoapods") version "1.7.20"
+        kotlin("multiplatform") version "1.7.20"
+        id("com.android.library") version "7.0.4"
+
     }
 }
 rootProject.name = "capillary-kmp"

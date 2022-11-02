@@ -1,7 +1,7 @@
 plugins {
-    kotlin("multiplatform") version "1.7.20"
-    id("com.android.application")
-    id("kotlin-android-extensions")
+    id("com.android.library")
+    kotlin("multiplatform")
+    kotlin("native.cocoapods")
 }
 
 group = "dev.baseio"
@@ -21,38 +21,25 @@ kotlin {
             useJUnitPlatform()
         }
     }
-    js(BOTH) {
-        browser {
-            commonWebpackConfig {
-                cssSupport.enabled = true
-            }
+    android()
+    cocoapods {
+        version = "1.0"
+        summary = ""
+        homepage = ""
+
+        framework {
+            baseName = "capillary-ios"
         }
-    }
-    val hostOs = System.getProperty("os.name")
-    val isMingwX64 = hostOs.startsWith("Windows")
-    val nativeTarget = when {
-        hostOs == "Mac OS X" -> macosX64("native")
-        hostOs == "Linux" -> linuxX64("native")
-        isMingwX64 -> mingwX64("native")
-        else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
+
+        ios.deploymentTarget = "14.1"
+
+        pod("Tink", version = "~> 1.6.1", moduleName = "Tink")
     }
 
-    
-    android()
-    iosX64 {
-        binaries {
-            framework {
-                baseName = "library"
-            }
-        }
-    }
-    iosArm64 {
-        binaries {
-            framework {
-                baseName = "library"
-            }
-        }
-    }
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
+
     sourceSets {
         val commonMain by getting
         val commonTest by getting {
@@ -62,14 +49,12 @@ kotlin {
         }
         val jvmMain by getting{
             dependencies{
-                implementation("")
+                implementation("com.google.crypto.tink:tink:1.1.0") {
+                    exclude("com.google.protobuf", module = "*")
+                }
             }
         }
         val jvmTest by getting
-        val jsMain by getting
-        val jsTest by getting
-        val nativeMain by getting
-        val nativeTest by getting
         val androidMain by getting {
             dependencies {
                 implementation("com.google.crypto.tink:tink-android:1.1.0") {
@@ -89,9 +74,15 @@ kotlin {
             }
         }
         val iosX64Main by getting
-        val iosX64Test by getting
         val iosArm64Main by getting
-        val iosArm64Test by getting
+
+        val iosSimulatorArm64Main by getting
+        val iosMain by creating {
+            dependsOn(commonMain)
+            iosX64Main.dependsOn(this)
+            iosArm64Main.dependsOn(this)
+            iosSimulatorArm64Main.dependsOn(this)
+        }
     }
 }
 
@@ -99,7 +90,6 @@ android {
     compileSdkVersion(31)
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     defaultConfig {
-        applicationId = "org.example.library"
         minSdkVersion(24)
         targetSdkVersion(31)
     }
