@@ -1,7 +1,10 @@
+import io.github.timortel.kotlin_multiplatform_grpc_plugin.GrpcMultiplatformExtension.OutputTarget
+
 plugins {
     id("com.android.library")
     kotlin("multiplatform")
     kotlin("native.cocoapods")
+    id("io.github.timortel.kotlin-multiplatform-grpc-plugin") version "0.2.2"
 }
 
 group = "dev.baseio"
@@ -10,6 +13,7 @@ version = "1.0"
 repositories {
     google()
     mavenCentral()
+    mavenLocal()
 }
 
 kotlin {
@@ -41,14 +45,26 @@ kotlin {
     iosSimulatorArm64()
 
     sourceSets {
-        val commonMain by getting
+        val commonMain by getting {
+            kotlin.srcDirs(
+                projectDir.resolve("build/generated/source/kmp-grpc/commonMain/kotlin").canonicalPath,
+            )
+            dependencies {
+                implementation("io.github.timortel:grpc-multiplatform-lib:0.2.2")
+            }
+        }
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test"))
             }
         }
-        val jvmMain by getting{
-            dependencies{
+        val jvmMain by getting {
+            kotlin.srcDirs(
+                projectDir.resolve("build/generated/source/kmp-grpc/jvmMain/kotlin").canonicalPath,
+            )
+            dependencies {
+                api(project(":capillary_generate_protos"))
+                implementation("io.github.timortel:grpc-multiplatform-lib-jvm:0.2.2")
                 implementation("com.google.crypto.tink:tink:1.1.0") {
                     exclude("com.google.protobuf", module = "*")
                 }
@@ -56,10 +72,16 @@ kotlin {
         }
         val jvmTest by getting
         val androidMain by getting {
+            kotlin.srcDirs(
+                projectDir.resolve("build/generated/source/kmp-grpc/jvmMain/kotlin").canonicalPath,
+            )
             dependencies {
+                implementation("io.github.timortel:grpc-multiplatform-lib-android:0.2.2")
                 implementation("com.google.crypto.tink:tink-android:1.1.0") {
                     exclude("com.google.protobuf", module = "*")
                 }
+                api(project(":capillary_generate_protos"))
+
                 implementation("com.google.crypto.tink:apps-webpush:1.1.0") {
                     exclude("com.google.crypto.tink", module = "*")
                 }
@@ -75,15 +97,39 @@ kotlin {
         }
         val iosX64Main by getting
         val iosArm64Main by getting
-
         val iosSimulatorArm64Main by getting
         val iosMain by creating {
+            kotlin.srcDirs(
+                projectDir.resolve("build/generated/source/kmp-grpc/iosMain/kotlin").canonicalPath,
+            )
             dependsOn(commonMain)
             iosX64Main.dependsOn(this)
             iosArm64Main.dependsOn(this)
             iosSimulatorArm64Main.dependsOn(this)
         }
     }
+}
+
+grpcKotlinMultiplatform {
+    targetSourcesMap.put(OutputTarget.COMMON, listOf(kotlin.sourceSets.getByName("commonMain")))
+    targetSourcesMap.put(
+        OutputTarget.JVM,
+        listOf(kotlin.sourceSets.getByName("jvmMain"), kotlin.sourceSets.getByName("androidMain"))
+    )
+    targetSourcesMap.put(
+        OutputTarget.IOS,
+        listOf(
+            kotlin.sourceSets.getByName("iosArm64Main"),
+            kotlin.sourceSets.getByName("iosSimulatorArm64Main"),
+            kotlin.sourceSets.getByName("iosX64Main")
+        )
+    )
+    //Specify the folders where your proto files are located, you can list multiple.
+    protoSourceFolders.set(listOf(projectDir.resolve("capillary_protos/src/main/proto")))
+}
+
+dependencies {
+    commonMainApi("io.github.timortel:grpc-multiplatform-lib:0.2.2")
 }
 
 android {

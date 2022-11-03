@@ -3,6 +3,7 @@ pluginManagement {
         google()
         jcenter()
         gradlePluginPortal()
+        mavenLocal()
         mavenCentral()
     }
 
@@ -14,5 +15,8 @@ pluginManagement {
 
     }
 }
+
+include(":capillary_generate_protos")
+include(":capillary_protos")
 rootProject.name = "capillary-kmp"
 

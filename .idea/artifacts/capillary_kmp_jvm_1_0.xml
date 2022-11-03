@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" name="capillary-kmp-jvm-1.0">
-    <output-path>$PROJECT_DIR$/build/libs</output-path>
-    <root id="archive" name="capillary-kmp-jvm-1.0.jar">
-      <element id="module-output" name="capillary-kmp.jvmMain" />
-    </root>
-  </artifact>
-</component>
