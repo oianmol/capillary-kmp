@@ -3,7 +3,7 @@ package dev.baseio.security
 import com.google.crypto.tink.HybridDecrypt
 import com.google.protobuf.ByteString
 import dev.baseio.protoextensions.toByteArray
-import dev.baseio.slackdata.securepush.kmSKByteArrayElement
+import dev.baseio.slackdata.protos.kmSKByteArrayElement
 import dev.baseio.slackdata.securepush.KMSlackPublicKey
 import dev.baseio.slackdata.securepush.kmSlackPublicKey
 import java.security.GeneralSecurityException

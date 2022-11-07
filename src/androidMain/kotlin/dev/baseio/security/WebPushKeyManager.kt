@@ -10,7 +10,7 @@ import com.google.crypto.tink.subtle.Random
 import com.google.protobuf.InvalidProtocolBufferException
 import dev.baseio.protoextensions.toByteArray
 import dev.baseio.protoextensions.toKMWrappedWebPushPrivateKey
-import dev.baseio.slackdata.securepush.kmSKByteArrayElement
+import dev.baseio.slackdata.protos.kmSKByteArrayElement
 import dev.baseio.slackdata.securepush.KMWrappedWebPushPrivateKey
 import dev.baseio.slackdata.securepush.kmWrappedWebPushPrivateKey
 import dev.baseio.slackdata.securepush.kmWrappedWebPushPublicKey

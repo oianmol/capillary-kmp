@@ -6,7 +6,7 @@ import com.google.crypto.tink.HybridDecrypt
 import com.google.crypto.tink.KeysetHandle
 import com.google.crypto.tink.PublicKeyVerify
 import dev.baseio.protoextensions.toByteArray
-import dev.baseio.slackdata.securepush.kmSKByteArrayElement
+import dev.baseio.slackdata.protos.kmSKByteArrayElement
 import dev.baseio.slackdata.securepush.kmWrappedRsaEcdsaPublicKey
 import java.io.IOException
 import java.io.InputStream

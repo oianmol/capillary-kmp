@@ -53,6 +53,7 @@ kotlin {
             )
             dependencies {
                 implementation("io.github.timortel:grpc-multiplatform-lib:0.2.2")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
             }
         }
         val commonTest by getting {
