@@ -57,6 +57,7 @@ actual fun KMHybridRsaCiphertext.toByteArray(): ByteArray {
 
 actual fun KMWrappedRsaEcdsaPublicKey.toByteArray(): ByteArray {
     return WrappedRsaEcdsaPublicKey.newBuilder()
+        .setPadding(this.padding)
         .addAllKeybytes(this.keybytesList.map {
             SKByteArrayElement.newBuilder()
                 .setByte(it.byte).build()
