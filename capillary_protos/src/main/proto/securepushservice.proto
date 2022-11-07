@@ -1,0 +1,104 @@
+syntax = "proto3";
+
+
+package dev.baseio.slackdata.securepush;
+
+option java_multiple_files = true;
+
+message Empty {
+  string nothing = 1;
+}
+
+message SKByteArrayElement{
+  int32 byte = 1;
+}
+
+// The types of public keys.
+enum KeyAlgorithm {
+  RSA_ECDSA = 0;
+  WEB_PUSH = 1;
+}
+
+// Container for a RSA hybrid encryption ciphertext.
+message HybridRsaCiphertext {
+  repeated SKByteArrayElement symmetrickeyciphertext = 1;
+  repeated SKByteArrayElement payloadciphertext = 2;
+}
+
+// Container for a raw RSA public key and its associated metadata.
+message WrappedRsaEcdsaPublicKey {
+  string padding = 1;
+  repeated SKByteArrayElement keybytes = 2;
+}
+
+// Container for a tink Web Push public key parameters.
+message WrappedWebPushPublicKey {
+  repeated SKByteArrayElement authsecret = 1;
+  repeated SKByteArrayElement keybytes = 2;
+}
+
+// Container for a tink Web Push private key parameters.
+message WrappedWebPushPrivateKey {
+  repeated SKByteArrayElement authsecret = 1;
+  repeated SKByteArrayElement publickeybytes = 2;
+  repeated SKByteArrayElement privatekeybytes = 3;
+}
+
+// Container for a Capillary public key and its associated metadata.
+message SlackPublicKey {
+  string keychainuniqueid = 1;
+  int32 serialnumber = 2;
+  bool isauth = 3;
+  repeated SKByteArrayElement keybytes = 4;
+}
+
+// Container for a Slack ciphertext and its associated metadata.
+message SlackCiphertext {
+  string keychainuniqueid = 1;
+  int32 keyserialnumber = 2;
+  bool isauthkey = 3;
+  repeated SKByteArrayElement ciphertext = 4;
+}
+
+
+// A request to register the given public key for the specified user.
+message AddOrUpdatePublicKeyRequest {
+  string userId = 1;
+  KeyAlgorithm algorithm = 2;
+  bool isAuth = 3;
+  repeated SKByteArrayElement keyBytes = 4;
+}
+
+// A request to add the given user or update the FCM token of an existing user.
+message AddOrUpdateUserRequest {
+  string userId = 1;
+  string token = 2;
+}
+
+// A request to send the embedded data bytes encrypted into a Capillary
+// ciphertext to the specified user after the specified delay.
+message SendMessageRequest {
+  string userId = 1;
+  KeyAlgorithm keyAlgorithm = 2;
+  bool isAuthKey = 3;
+  int32 delaySeconds = 4;
+  repeated SKByteArrayElement data = 5;
+}
+
+// The push notification that is shown to the user.
+message SecureNotification {
+  int32 id = 1;
+  string title = 2;
+  string body = 3;
+}
+
+service SecurePushService {
+  // Registers a new user token or updates the FCM token of an existing user.
+  rpc addOrUpdateUser (AddOrUpdateUserRequest) returns (Empty);
+  // Registers a new public key for the user or updates the existing
+  // public key.
+  rpc addOrUpdatePublicKey (AddOrUpdatePublicKeyRequest) returns (Empty);
+  // Encrypts the supplied data bytes into a ciphertext and sends it
+  // to the user's device via FCM after the specified delay.
+  rpc sendMessage (SendMessageRequest) returns (Empty);
+}

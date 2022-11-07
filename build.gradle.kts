@@ -25,7 +25,9 @@ kotlin {
             useJUnitPlatform()
         }
     }
-    android()
+    android{
+        publishLibraryVariants("release")
+    }
     cocoapods {
         version = "1.0"
         summary = ""
@@ -64,9 +66,13 @@ kotlin {
             )
             dependencies {
                 api(project(":capillary_generate_protos"))
+                api("com.google.protobuf:protobuf-java:3.21.6")
                 implementation("io.github.timortel:grpc-multiplatform-lib-jvm:0.2.2")
-                implementation("com.google.crypto.tink:tink:1.1.0") {
+                implementation("com.google.crypto.tink:tink:1.7.0") {
                     exclude("com.google.protobuf", module = "*")
+                }
+                implementation("com.google.crypto.tink:apps-webpush:1.7.0") {
+                    exclude("com.google.crypto.tink", module = "*")
                 }
             }
         }
@@ -77,17 +83,18 @@ kotlin {
             )
             dependencies {
                 implementation("io.github.timortel:grpc-multiplatform-lib-android:0.2.2")
-                implementation("com.google.crypto.tink:tink-android:1.1.0") {
+                implementation("com.google.crypto.tink:tink-android:1.7.0") {
                     exclude("com.google.protobuf", module = "*")
                 }
                 api(project(":capillary_generate_protos"))
-
-                implementation("com.google.crypto.tink:apps-webpush:1.1.0") {
+                api("com.google.firebase:firebase-core:21.1.1")
+                api("com.google.firebase:firebase-messaging:23.1.0")
+                implementation("com.google.crypto.tink:apps-webpush:1.7.0") {
                     exclude("com.google.crypto.tink", module = "*")
                 }
-                implementation("com.google.protobuf:protobuf-java:3.4.0")
+                implementation("com.google.protobuf:protobuf-java:3.21.8")
                 implementation("joda-time:joda-time:2.9.9")
-                implementation("com.android.support:support-annotations:27.1.1")
+                implementation("com.android.support:support-annotations:28.0.0")
             }
         }
         val androidTest by getting {
