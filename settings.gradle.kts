@@ -17,6 +17,6 @@ pluginManagement {
 }
 
 include(":capillary_generate_protos")
-include(":capillary_protos")
+include(":slack_protos")
 rootProject.name = "capillary-kmp"
 

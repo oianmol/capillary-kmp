@@ -40,7 +40,7 @@ repositories {
 }
 
 dependencies {
-    protobuf(project(":capillary_protos"))
+    protobuf(project(":slack_protos"))
     api("com.google.protobuf:protobuf-kotlin:${Versions.PROTOBUF}")
     api("com.google.protobuf:protobuf-java-util:${Versions.PROTOBUF}")
     api("io.grpc:grpc-protobuf:${Versions.GRPC}")
