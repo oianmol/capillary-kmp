@@ -21,9 +21,10 @@ actual fun KMSlackPublicKey.toByteArray(): ByteArray {
     builder.setKeychainuniqueid(keychainuniqueid)
     builder.setSerialnumber(serialnumber)
     builder.setIsauth(isauth)
-    builder.addAllKeybytes(keybytesList.map { it.`impl` })
+    builder.addAllKeybytes(keybytesList.map { SKByteArrayElement.newBuilder().setByte(it.byte).build() })
     return builder.build().toByteArray()
 }
+
 
 actual fun KMWrappedWebPushPrivateKey.toByteArray(): ByteArray {
     return WrappedWebPushPrivateKey.newBuilder()
@@ -34,7 +35,7 @@ actual fun KMWrappedWebPushPrivateKey.toByteArray(): ByteArray {
         .addAllPrivatekeybytes(this.privatekeybytesList.map {
             SKByteArrayElement.newBuilder()
                 .setByte(it.byte).build()
-        }) .addAllPublickeybytes(this.publickeybytesList.map {
+        }).addAllPublickeybytes(this.publickeybytesList.map {
             SKByteArrayElement.newBuilder()
                 .setByte(it.byte).build()
         })
@@ -63,7 +64,7 @@ actual fun KMWrappedRsaEcdsaPublicKey.toByteArray(): ByteArray {
         .build().toByteArray()
 }
 
-actual fun KMSecureNotification.toByteArray(): ByteArray{
+actual fun KMSecureNotification.toByteArray(): ByteArray {
     return SecureNotification.newBuilder()
         .setId(this.id)
         .setTitle(this.title)
@@ -75,17 +76,17 @@ actual fun KMSecureNotification.toByteArray(): ByteArray{
 actual fun ByteArray.toKMWrappedWebPushPrivateKey(): KMWrappedWebPushPrivateKey {
     val privateKey = WrappedWebPushPrivateKey.parseFrom(this)
     return kmWrappedWebPushPrivateKey {
-        this.authsecretList.addAll(privateKey.authsecretList.map {it->
+        this.authsecretList.addAll(privateKey.authsecretList.map { it ->
             kmSKByteArrayElement {
                 this.byte = it.byte
             }
         })
-        this.privatekeybytesList.addAll(privateKey.privatekeybytesList.map { it->
+        this.privatekeybytesList.addAll(privateKey.privatekeybytesList.map { it ->
             kmSKByteArrayElement {
                 this.byte = it.byte
             }
         })
-        this.publickeybytesList.addAll(privateKey.publickeybytesList.map {it->
+        this.publickeybytesList.addAll(privateKey.publickeybytesList.map { it ->
             kmSKByteArrayElement {
                 this.byte = it.byte
             }

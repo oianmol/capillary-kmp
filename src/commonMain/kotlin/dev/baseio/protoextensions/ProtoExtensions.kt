@@ -2,7 +2,6 @@ package dev.baseio.protoextensions
 
 import dev.baseio.slackdata.securepush.*
 
-
 expect fun KMWrappedWebPushPublicKey.toByteArray(): ByteArray
 expect fun KMSlackPublicKey.toByteArray(): ByteArray
 expect fun KMWrappedWebPushPrivateKey.toByteArray(): ByteArray

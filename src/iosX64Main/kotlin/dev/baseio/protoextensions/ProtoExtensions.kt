@@ -21,7 +21,7 @@ actual fun KMSlackPublicKey.toByteArray(): ByteArray {
     builder.setKeychainuniqueid(keychainuniqueid)
     builder.setSerialnumber(serialnumber)
     builder.setIsauth(isauth)
-    builder.addAllKeybytes(keybytesList.map { it.`impl` })
+    builder.addAllKeybytes(keybytesList.map { SKByteArrayElement.newBuilder().setByte(it.byte).build() })
     return builder.build().toByteArray()
 }
 
