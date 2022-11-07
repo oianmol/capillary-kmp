@@ -41,12 +41,10 @@ kotlin {
 
         pod("Tink", version = "~> 1.6.1", moduleName = "Tink")
     }*/
-
 /*
     iosX64()
     iosArm64()
-    iosSimulatorArm64()
-*/
+    iosSimulatorArm64()*/
 
     sourceSets {
         val commonMain by getting {
