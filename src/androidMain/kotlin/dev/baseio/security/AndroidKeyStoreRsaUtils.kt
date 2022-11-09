@@ -16,8 +16,7 @@ import java.security.spec.RSAKeyGenParameterSpec
  * levels are publicly released.
  */
 object AndroidKeyStoreRsaUtils {
-    private const val AUTH_KEY_ALIAS_SUFFIX = "_capillary_rsa_auth"
-    private const val NO_AUTH_KEY_ALIAS_SUFFIX = "_capillary_rsa_no_auth"
+    private const val AUTH_KEY_ALIAS_SUFFIX = "_capillary_rsa"
     private const val KEYSTORE_ANDROID = "AndroidKeyStore"
     private const val KEY_SIZE = 2048
     private const val KEY_DURATION_YEARS = 100
@@ -25,8 +24,8 @@ object AndroidKeyStoreRsaUtils {
     // Allow any screen unlock event to be valid for up to 1 hour.
     private const val UNLOCK_DURATION_SECONDS = 60 * 60
 
-    fun generateKeyPair(keychainId: String, isAuth: Boolean) {
-        val keyAlias = toKeyAlias(keychainId, isAuth)
+    fun generateKeyPair(keychainId: String) {
+        val keyAlias = toKeyAlias(keychainId)
         val rsaSpec = RSAKeyGenParameterSpec(KEY_SIZE, RSAKeyGenParameterSpec.F4)
         val spec: AlgorithmParameterSpec
         val specBuilder: KeyGenParameterSpec.Builder =
@@ -34,44 +33,33 @@ object AndroidKeyStoreRsaUtils {
                 .setAlgorithmParameterSpec(rsaSpec)
                 .setDigests(KeyProperties.DIGEST_SHA256)
                 .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_RSA_OAEP)
-        if (isAuth) {
-            specBuilder.setUserAuthenticationRequired(true)
-            specBuilder.setUserAuthenticationValidityDurationSeconds(UNLOCK_DURATION_SECONDS)
-        }
         spec = specBuilder.build()
         val keyPairGenerator = KeyPairGenerator.getInstance("RSA", KEYSTORE_ANDROID)
         keyPairGenerator.initialize(spec)
         keyPairGenerator.generateKeyPair()
     }
 
-    fun getPublicKey(keyStore: KeyStore, keychainId: String, isAuth: Boolean): PublicKey {
-        val alias = toKeyAlias(keychainId, isAuth)
-        checkKeyExists(keyStore, alias)
-        return keyStore.getCertificate(alias).publicKey
+    fun getPublicKey(keyStore: KeyStore, keychainId: String): PublicKey {
+        checkKeyExists(keyStore, keychainId)
+        return keyStore.getCertificate(toKeyAlias(keychainId)).publicKey
     }
 
-    fun getPrivateKey(keyStore: KeyStore, keychainId: String, isAuth: Boolean): PrivateKey {
-        val alias = toKeyAlias(keychainId, isAuth)
-        checkKeyExists(keyStore, alias)
-        return keyStore.getKey(alias, null) as PrivateKey
+    fun getPrivateKey(keyStore: KeyStore, keychainId: String): PrivateKey {
+        checkKeyExists(keyStore, keychainId)
+        return keyStore.getKey(toKeyAlias(keychainId), null) as PrivateKey
     }
 
-    fun deleteKeyPair(keyStore: KeyStore, keychainId: String, isAuth: Boolean) {
-        val alias = toKeyAlias(keychainId, isAuth)
-        checkKeyExists(keyStore, alias)
-        keyStore.deleteEntry(alias)
+    fun deleteKeyPair(keyStore: KeyStore, keychainId: String) {
+        checkKeyExists(keyStore, toKeyAlias(keychainId))
+        keyStore.deleteEntry(toKeyAlias(keychainId))
     }
 
-    private fun toKeyAlias(keychainId: String, isAuth: Boolean): String {
-        val suffix = if (isAuth) AUTH_KEY_ALIAS_SUFFIX else NO_AUTH_KEY_ALIAS_SUFFIX
-        return keychainId + suffix
+    private fun toKeyAlias(keychainId: String): String {
+        return keychainId + AUTH_KEY_ALIAS_SUFFIX
     }
 
-    fun checkKeyExists(keyStore: KeyStore, keychainId: String, isAuth: Boolean) {
-        checkKeyExists(keyStore, toKeyAlias(keychainId, isAuth))
-    }
-
-    private fun checkKeyExists(keyStore: KeyStore, alias: String) {
+    fun checkKeyExists(keyStore: KeyStore, keychainId: String) {
+        val alias = toKeyAlias(keychainId)
         if (!keyStore.containsAlias(alias)) {
             throw Exception("android key store has no rsa key pair with alias $alias")
         }

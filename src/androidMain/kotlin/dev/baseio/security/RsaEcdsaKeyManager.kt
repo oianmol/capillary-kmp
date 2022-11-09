@@ -3,7 +3,7 @@ package dev.baseio.security
 import android.content.Context
 import com.google.crypto.tink.HybridDecrypt
 import dev.baseio.protoextensions.toByteArray
-import dev.baseio.slackdata.protos.kmSKByteArrayElement
+import dev.baseio.slackdata.common.kmSKByteArrayElement
 import dev.baseio.slackdata.securepush.kmWrappedRsaEcdsaPublicKey
 import java.io.IOException
 import java.io.InputStream
@@ -35,12 +35,12 @@ actual class RsaEcdsaKeyManager(
         senderVerifier = com.google.crypto.tink.signature.PublicKeyVerifyFactory.getPrimitive(verificationKeyHandle)
     }
 
-    actual fun rawGenerateKeyPair(isAuth: Boolean) {
-        AndroidKeyStoreRsaUtils.generateKeyPair(keychainId, isAuth)
+    actual fun rawGenerateKeyPair() {
+        AndroidKeyStoreRsaUtils.generateKeyPair(keychainId)
     }
 
-    actual fun rawGetPublicKey(isAuth: Boolean): ByteArray {
-        val publicKeyBytes: ByteArray = AndroidKeyStoreRsaUtils.getPublicKey(keyStore, keychainId, isAuth).encoded
+    actual fun rawGetPublicKey(): ByteArray {
+        val publicKeyBytes: ByteArray = AndroidKeyStoreRsaUtils.getPublicKey(keyStore, keychainId).encoded
         return kmWrappedRsaEcdsaPublicKey {
             padding = AndroidKeyStoreRsaUtils.compatibleRsaPadding.name
             keybytesList.addAll(publicKeyBytes.map {
@@ -52,11 +52,11 @@ actual class RsaEcdsaKeyManager(
     }
 
     actual fun decrypt(cipherText: ByteArray, contextInfo: ByteArray?): ByteArray? {
-        return rawGetDecrypter(false).decrypt(cipherText, contextInfo)
+        return rawGetDecrypter().decrypt(cipherText, contextInfo)
     }
 
-    fun rawGetDecrypter(isAuth: Boolean): HybridDecrypt {
-        val recipientPrivateKey: PrivateKey = AndroidKeyStoreRsaUtils.getPrivateKey(keyStore, keychainId, isAuth)
+    fun rawGetDecrypter(): HybridDecrypt {
+        val recipientPrivateKey: PrivateKey = AndroidKeyStoreRsaUtils.getPrivateKey(keyStore, keychainId)
         return RsaEcdsaHybridDecrypt.Builder()
             .withRecipientPrivateKey(recipientPrivateKey)
             .withSenderVerifier(senderVerifier)
@@ -64,8 +64,8 @@ actual class RsaEcdsaKeyManager(
             .build()
     }
 
-    actual fun rawDeleteKeyPair(isAuth: Boolean) {
-        AndroidKeyStoreRsaUtils.deleteKeyPair(keyStore, keychainId, isAuth)
+    actual fun rawDeleteKeyPair() {
+        AndroidKeyStoreRsaUtils.deleteKeyPair(keyStore, keychainId)
     }
 
     companion object {
@@ -101,7 +101,7 @@ actual class RsaEcdsaKeyManager(
         }
     }
 
-    override fun getDecrypter(keychainuniqueid: String, keyserialnumber: Int, isauthkey: Boolean): HybridDecrypt {
-        return rawGetDecrypter(isauthkey)
+    override fun getDecrypter(): HybridDecrypt {
+        return rawGetDecrypter()
     }
 }

@@ -8,7 +8,7 @@ import com.google.android.gms.common.GooglePlayServicesNotAvailableException
 import com.google.android.gms.common.GooglePlayServicesRepairableException
 import com.google.android.gms.security.ProviderInstaller
 import com.google.protobuf.ByteString
-import dev.baseio.slackdata.securepush.KMKeyAlgorithm
+import dev.baseio.slackdata.common.KMKeyAlgorithm
 import dev.baseio.slackdata.securepush.KMSecureNotification
 import dev.baseio.slackdata.securepush.kmSecureNotification
 import org.example.library.R
@@ -94,8 +94,6 @@ object Utils {
                     )
                 }
             }
-
-            KMKeyAlgorithm.WEB_PUSH -> WebPushKeyManager.getInstance(context, WEB_PUSH_KEYCHAIN_ID)
             else -> throw IllegalArgumentException("unsupported key algorithm")
         }
     }

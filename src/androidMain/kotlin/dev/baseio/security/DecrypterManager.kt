@@ -14,11 +14,7 @@ actual class DecrypterManager internal actual constructor(
         val data: ByteArray
 
         // Attempt decryption.
-        val decrypter: HybridDecrypt = keyManager.getDecrypter(
-            ciphertext.keychainuniqueid,
-            ciphertext.keyserialnumber,
-            ciphertext.isauthkey
-        )
+        val decrypter: HybridDecrypt = keyManager.getDecrypter()
         data = decrypter.decrypt(rawCiphertext, null)
         return data
     }

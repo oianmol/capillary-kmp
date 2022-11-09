@@ -6,7 +6,8 @@ import com.google.crypto.tink.HybridDecrypt
 import com.google.crypto.tink.KeysetHandle
 import com.google.crypto.tink.PublicKeyVerify
 import dev.baseio.protoextensions.toByteArray
-import dev.baseio.slackdata.protos.kmSKByteArrayElement
+import dev.baseio.slackdata.common.kmSKByteArrayElement
+import dev.baseio.slackdata.common.kmSKByteArrayElement
 import dev.baseio.slackdata.securepush.kmWrappedRsaEcdsaPublicKey
 import java.io.IOException
 import java.io.InputStream
@@ -39,11 +40,11 @@ actual class RsaEcdsaKeyManager constructor(
         senderVerifier = com.google.crypto.tink.signature.PublicKeyVerifyFactory.getPrimitive(verificationKeyHandle)
     }
 
-    actual override fun rawGenerateKeyPair(isAuth: Boolean) {
+    actual override fun rawGenerateKeyPair() {
         JVMKeyStoreRsaUtils.generateKeyPair(keychainId, keyStore)
     }
 
-    actual override fun rawGetPublicKey(isAuth: Boolean): ByteArray {
+    actual override fun rawGetPublicKey(): ByteArray {
         val publicKeyBytes: ByteArray = JVMKeyStoreRsaUtils.getPublicKey(keyStore, keychainId).encoded
         return kmWrappedRsaEcdsaPublicKey {
             padding = JVMKeyStoreRsaUtils.compatibleRsaPadding.name
@@ -55,15 +56,11 @@ actual class RsaEcdsaKeyManager constructor(
         }.toByteArray()
     }
 
-    override fun rawGetDecrypter(isAuth: Boolean): HybridDecrypt {
-        return rawGetDecrypter()
-    }
-
     actual fun decrypt(cipherText: ByteArray, contextInfo: ByteArray?): ByteArray? {
         return rawGetDecrypter().decrypt(cipherText, contextInfo)
     }
 
-    fun rawGetDecrypter(): HybridDecrypt {
+    override  fun rawGetDecrypter(): HybridDecrypt {
         val recipientPrivateKey: PrivateKey = JVMKeyStoreRsaUtils.getPrivateKey(keyStore, keychainId)
         return RsaEcdsaHybridDecrypt.Builder()
             .withRecipientPrivateKey(recipientPrivateKey)
@@ -72,7 +69,7 @@ actual class RsaEcdsaKeyManager constructor(
             .build()
     }
 
-    actual override fun rawDeleteKeyPair(isAuth: Boolean) {
+    actual override fun rawDeleteKeyPair() {
         JVMKeyStoreRsaUtils.deleteKeyPair(keyStore, keychainId)
     }
 

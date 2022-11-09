@@ -1,46 +1,16 @@
 package dev.baseio.protoextensions
 
+import dev.baseio.slackdata.common.SKByteArrayElement
+import dev.baseio.slackdata.common.kmSKByteArrayElement
 import dev.baseio.slackdata.securepush.*
 import dev.baseio.slackdata.protos.*
 
-actual fun KMWrappedWebPushPublicKey.toByteArray(): ByteArray {
-    return WrappedWebPushPublicKey.newBuilder()
-        .addAllAuthsecret(this.authsecretList.map {
-            SKByteArrayElement.newBuilder()
-                .setByte(it.byte).build()
-        })
-        .addAllKeybytes(this.keybytesList.map {
-            SKByteArrayElement.newBuilder()
-                .setByte(it.byte).build()
-        })
-        .build().toByteArray()
-}
-
 actual fun KMSlackPublicKey.toByteArray(): ByteArray {
     val builder = SlackPublicKey.newBuilder()
-    builder.setKeychainuniqueid(keychainuniqueid)
-    builder.setSerialnumber(serialnumber)
-    builder.setIsauth(isauth)
     builder.addAllKeybytes(keybytesList.map { it.`impl` })
     return builder.build().toByteArray()
 }
 
-
-actual fun KMWrappedWebPushPrivateKey.toByteArray(): ByteArray {
-    return WrappedWebPushPrivateKey.newBuilder()
-        .addAllAuthsecret(this.authsecretList.map {
-            SKByteArrayElement.newBuilder()
-                .setByte(it.byte).build()
-        })
-        .addAllPrivatekeybytes(this.privatekeybytesList.map {
-            SKByteArrayElement.newBuilder()
-                .setByte(it.byte).build()
-        }).addAllPublickeybytes(this.publickeybytesList.map {
-            SKByteArrayElement.newBuilder()
-                .setByte(it.byte).build()
-        })
-        .build().toByteArray()
-}
 
 actual fun KMHybridRsaCiphertext.toByteArray(): ByteArray {
     return HybridRsaCiphertext.newBuilder()
@@ -74,27 +44,6 @@ actual fun KMSecureNotification.toByteArray(): ByteArray {
         .toByteArray()
 }
 
-actual fun ByteArray.toKMWrappedWebPushPrivateKey(): KMWrappedWebPushPrivateKey {
-    val privateKey = WrappedWebPushPrivateKey.parseFrom(this)
-    return kmWrappedWebPushPrivateKey {
-        this.authsecretList.addAll(privateKey.authsecretList.map { it ->
-            kmSKByteArrayElement {
-                this.byte = it.byte
-            }
-        })
-        this.privatekeybytesList.addAll(privateKey.privatekeybytesList.map { it ->
-            kmSKByteArrayElement {
-                this.byte = it.byte
-            }
-        })
-        this.publickeybytesList.addAll(privateKey.publickeybytesList.map { it ->
-            kmSKByteArrayElement {
-                this.byte = it.byte
-            }
-        })
-    }
-}
-
 actual fun ByteArray.toSecureNotification(): KMSecureNotification {
     val secureNotification = SecureNotification.parseFrom(this)
     return kmSecureNotification {
@@ -112,9 +61,6 @@ actual fun ByteArray.toSlackCipherText(): KMSlackCiphertext {
                 this.byte = it.byte
             }
         })
-        this.isauthkey = secureNotification.isauthkey
-        this.keychainuniqueid = secureNotification.keychainuniqueid
-        this.keyserialnumber = secureNotification.keyserialnumber
     }
 }
 

@@ -1,7 +1,7 @@
 package dev.baseio.security
 
 import dev.baseio.protoextensions.toByteArray
-import dev.baseio.slackdata.securepush.KMKeyAlgorithm
+import dev.baseio.slackdata.common.KMKeyAlgorithm
 import dev.baseio.slackdata.securepush.kmSecureNotification
 import java.io.IOException
 import java.security.GeneralSecurityException

@@ -1,8 +1,8 @@
 package dev.baseio.security
 
 expect class RsaEcdsaKeyManager {
-    fun rawDeleteKeyPair(isAuth: Boolean)
-    fun rawGetPublicKey(isAuth: Boolean): ByteArray
-    fun rawGenerateKeyPair(isAuth: Boolean)
+    fun rawDeleteKeyPair()
+    fun rawGetPublicKey(): ByteArray
+    fun rawGenerateKeyPair()
     fun decrypt(cipherText: ByteArray, contextInfo: ByteArray?): ByteArray?
 }
