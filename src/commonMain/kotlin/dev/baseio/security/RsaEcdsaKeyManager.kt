@@ -1,8 +1,8 @@
 package dev.baseio.security
 
+import capillary.kmp.kmByteArrayElement
+import capillary.kmp.kmSlackPublicKey
 import dev.baseio.protoextensions.toByteArray
-import dev.baseio.slackdata.common.kmSKByteArrayElement
-import dev.baseio.slackdata.securepush.kmSlackPublicKey
 import java.security.PublicKey
 
 
@@ -19,7 +19,7 @@ fun RsaEcdsaKeyManager.getPublicKey(): ByteArray {
     return kmSlackPublicKey {
         this.keybytesList.addAll(
             rawGetPublicKey().map {
-                kmSKByteArrayElement {
+                kmByteArrayElement {
                     this.byte = it.toInt()
                 }
             }

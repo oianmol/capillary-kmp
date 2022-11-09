@@ -1,5 +1,6 @@
 package dev.baseio.security
 
+import capillary.kmp.*
 import com.google.crypto.tink.Aead
 import com.google.crypto.tink.BinaryKeysetReader
 import com.google.crypto.tink.BinaryKeysetWriter
@@ -8,9 +9,7 @@ import com.google.crypto.tink.KeyTemplates
 import com.google.crypto.tink.KeysetHandle
 import com.google.protobuf.InvalidProtocolBufferException
 import dev.baseio.protoextensions.toByteArray
-import dev.baseio.slackdata.common.kmSKByteArrayElement
-import dev.baseio.slackdata.securepush.KMHybridRsaCiphertext
-import dev.baseio.slackdata.securepush.kmHybridRsaCiphertext
+import dev.baseio.protoextensions.toKMHybridRsaCiphertext
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.security.GeneralSecurityException
@@ -66,12 +65,12 @@ object HybridRsaUtils {
         val payloadCiphertext = aead.encrypt(plaintext, emptyEad)
         return kmHybridRsaCiphertext {
             this@kmHybridRsaCiphertext.symmetrickeyciphertextList.addAll(symmetricKeyCiphertext.map { mapByte ->
-                kmSKByteArrayElement {
+                kmByteArrayElement {
                     this.byte = mapByte.toInt()
                 }
             })
             this@kmHybridRsaCiphertext.payloadciphertextList.addAll(payloadCiphertext.map { mapByte ->
-                kmSKByteArrayElement {
+                kmByteArrayElement {
                     this.byte = mapByte.toInt()
                 }
             })
@@ -111,7 +110,8 @@ object HybridRsaUtils {
         }
 
         // Retrieve symmetric key.
-        val symmetricKeyCiphertext: ByteArray = hybridRsaCiphertext.symmetrickeyciphertextList.map { it.byte.toByte() }.toByteArray()
+        val symmetricKeyCiphertext: ByteArray =
+            hybridRsaCiphertext.symmetrickeyciphertextList.map { it.byte.toByte() }.toByteArray()
         val symmetricKeyBytes = rsaCipher.doFinal(symmetricKeyCiphertext)
         val symmetricKeyHandle: KeysetHandle = try {
             CleartextKeysetHandle.read(BinaryKeysetReader.withBytes(symmetricKeyBytes))
@@ -121,11 +121,8 @@ object HybridRsaUtils {
 
         // Retrieve and return plaintext.
         val aead = symmetricKeyHandle.getPrimitive(Aead::class.java)
-        val payloadCiphertext: ByteArray = hybridRsaCiphertext.payloadciphertextList.map { it.byte.toByte() }.toByteArray()
+        val payloadCiphertext: ByteArray =
+            hybridRsaCiphertext.payloadciphertextList.map { it.byte.toByte() }.toByteArray()
         return aead.decrypt(payloadCiphertext, emptyEad)
     }
-}
-
-fun ByteArray.toKMHybridRsaCiphertext():KMHybridRsaCiphertext{
-    TODO("Not yet implemented")
 }

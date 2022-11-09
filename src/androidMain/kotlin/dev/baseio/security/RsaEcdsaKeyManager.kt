@@ -1,9 +1,8 @@
 package dev.baseio.security
 
 import dev.baseio.protoextensions.toByteArray
-import dev.baseio.slackdata.common.kmSKByteArrayElement
-import dev.baseio.slackdata.securepush.kmWrappedRsaEcdsaPublicKey
 import java.io.IOException
+import capillary.kmp.*
 import java.io.InputStream
 import java.security.GeneralSecurityException
 import java.security.KeyStore
@@ -43,7 +42,7 @@ actual class RsaEcdsaKeyManager(
             padding = AndroidKeyStoreRsaUtils.compatibleRsaPadding.name
             keybytesList.addAll(
                 publicKeyBytes.map {
-                    kmSKByteArrayElement {
+                    kmByteArrayElement {
                         byte = it.toInt()
                     }
                 })

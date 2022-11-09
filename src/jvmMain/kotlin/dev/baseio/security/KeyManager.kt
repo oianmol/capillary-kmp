@@ -1,9 +1,9 @@
 package dev.baseio.security
 
+import capillary.kmp.kmByteArrayElement
+import capillary.kmp.kmSlackPublicKey
 import com.google.crypto.tink.HybridDecrypt
 import dev.baseio.protoextensions.toByteArray
-import dev.baseio.slackdata.common.kmSKByteArrayElement
-import dev.baseio.slackdata.securepush.kmSlackPublicKey
 import java.security.GeneralSecurityException
 
 actual abstract class KeyManager {
@@ -42,7 +42,7 @@ actual abstract class KeyManager {
         return kmSlackPublicKey {
             this.keybytesList.addAll(
                 rawGetPublicKey()!!.map {
-                    kmSKByteArrayElement {
+                    kmByteArrayElement {
                         this.byte = it.toInt()
                     }
                 }

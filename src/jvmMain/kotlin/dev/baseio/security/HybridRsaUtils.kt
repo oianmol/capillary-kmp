@@ -1,5 +1,8 @@
 package dev.baseio.security
 
+import capillary.kmp.KMHybridRsaCiphertext
+import capillary.kmp.kmByteArrayElement
+import capillary.kmp.kmHybridRsaCiphertext
 import com.google.crypto.tink.Aead
 import com.google.crypto.tink.BinaryKeysetReader
 import com.google.crypto.tink.BinaryKeysetWriter
@@ -9,9 +12,6 @@ import com.google.crypto.tink.KeysetHandle
 import com.google.protobuf.InvalidProtocolBufferException
 import dev.baseio.protoextensions.toByteArray
 import dev.baseio.protoextensions.toKMHybridRsaCiphertext
-import dev.baseio.slackdata.common.kmSKByteArrayElement
-import dev.baseio.slackdata.securepush.KMHybridRsaCiphertext
-import dev.baseio.slackdata.securepush.kmHybridRsaCiphertext
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.security.GeneralSecurityException
@@ -67,12 +67,12 @@ object HybridRsaUtils {
         val payloadCiphertext = aead.encrypt(plaintext, emptyEad)
         return kmHybridRsaCiphertext {
             this@kmHybridRsaCiphertext.symmetrickeyciphertextList.addAll(symmetricKeyCiphertext.map { mapByte ->
-                kmSKByteArrayElement {
+                kmByteArrayElement {
                     this.byte = mapByte.toInt()
                 }
             })
             this@kmHybridRsaCiphertext.payloadciphertextList.addAll(payloadCiphertext.map { mapByte ->
-                kmSKByteArrayElement {
+                kmByteArrayElement {
                     this.byte = mapByte.toInt()
                 }
             })

@@ -1,12 +1,12 @@
 package dev.baseio.security
 
+import capillary.kmp.kmByteArrayElement
+import capillary.kmp.kmWrappedRsaEcdsaPublicKey
 import com.google.crypto.tink.BinaryKeysetReader
 import com.google.crypto.tink.CleartextKeysetHandle
 import com.google.crypto.tink.KeysetHandle
 import com.google.crypto.tink.PublicKeyVerify
 import dev.baseio.protoextensions.toByteArray
-import dev.baseio.slackdata.common.kmSKByteArrayElement
-import dev.baseio.slackdata.securepush.kmWrappedRsaEcdsaPublicKey
 import java.io.InputStream
 import java.security.KeyStore
 import java.security.PrivateKey
@@ -40,7 +40,7 @@ actual class RsaEcdsaKeyManager(
         return kmWrappedRsaEcdsaPublicKey {
             padding = JVMKeyStoreRsaUtils.compatibleRsaPadding.name
             keybytesList.addAll(publicKeyBytes.map {
-                kmSKByteArrayElement {
+                kmByteArrayElement {
                     byte = it.toInt()
                 }
             })

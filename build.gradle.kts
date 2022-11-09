@@ -66,7 +66,7 @@ kotlin {
                 projectDir.resolve("build/generated/source/kmp-grpc/jvmMain/kotlin").canonicalPath,
             )
             dependencies {
-                api(project(":slack_generate_protos"))
+                api(project(":capillary_generate_protos"))
                 api("com.google.protobuf:protobuf-java:3.21.8")
                 implementation("io.github.timortel:grpc-multiplatform-lib-jvm:0.2.2")
                 implementation("com.google.crypto.tink:tink:1.7.0") {
@@ -87,7 +87,7 @@ kotlin {
                 implementation("com.google.crypto.tink:tink-android:1.7.0") {
                     exclude("com.google.protobuf", module = "*")
                 }
-                api(project(":slack_generate_protos"))
+                api(project(":capillary_generate_protos"))
                 api("com.google.firebase:firebase-core:21.1.1")
                 api("com.google.firebase:firebase-messaging:23.1.0")
                 implementation("com.google.crypto.tink:apps-webpush:1.7.0") {
@@ -133,7 +133,7 @@ grpcKotlinMultiplatform {
         )
     )*/
     //Specify the folders where your proto files are located, you can list multiple.
-    protoSourceFolders.set(listOf(projectDir.resolve("slack_protos/src/main/proto")))
+    protoSourceFolders.set(listOf(projectDir.resolve("capillary_protos/src/main/proto")))
 }
 
 dependencies {
