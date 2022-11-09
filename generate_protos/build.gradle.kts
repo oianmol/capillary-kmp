@@ -40,7 +40,7 @@ repositories {
 }
 
 dependencies {
-    "protobuf"(project(":protos"))
+    protobuf(project(":protos"))
     api("com.google.protobuf:protobuf-kotlin:${Versions.PROTOBUF}")
     api("com.google.protobuf:protobuf-java-util:${Versions.PROTOBUF}")
     api("io.grpc:grpc-protobuf:${Versions.GRPC}")
