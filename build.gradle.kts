@@ -67,7 +67,7 @@ kotlin {
             )
             dependencies {
                 api(project(":slack_generate_protos"))
-                api("com.google.protobuf:protobuf-java:3.21.6")
+                api("com.google.protobuf:protobuf-java:3.21.8")
                 implementation("io.github.timortel:grpc-multiplatform-lib-jvm:0.2.2")
                 implementation("com.google.crypto.tink:tink:1.7.0") {
                     exclude("com.google.protobuf", module = "*")

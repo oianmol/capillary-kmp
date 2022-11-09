@@ -24,7 +24,11 @@ object AndroidKeyStoreRsaUtils {
     // Allow any screen unlock event to be valid for up to 1 hour.
     private const val UNLOCK_DURATION_SECONDS = 60 * 60
 
+<<<<<<< HEAD
     fun generateKeyPair(keychainId: String) {
+=======
+    fun generateKeyPair(keychainId: String ) {
+>>>>>>> a86e983 (fix: compilation issues)
         val keyAlias = toKeyAlias(keychainId)
         val rsaSpec = RSAKeyGenParameterSpec(KEY_SIZE, RSAKeyGenParameterSpec.F4)
         val spec: AlgorithmParameterSpec
@@ -39,6 +43,7 @@ object AndroidKeyStoreRsaUtils {
         keyPairGenerator.generateKeyPair()
     }
 
+<<<<<<< HEAD
     fun getPublicKey(keyStore: KeyStore, keychainId: String): PublicKey {
         checkKeyExists(keyStore, keychainId)
         return keyStore.getCertificate(toKeyAlias(keychainId)).publicKey
@@ -60,6 +65,35 @@ object AndroidKeyStoreRsaUtils {
 
     fun checkKeyExists(keyStore: KeyStore, keychainId: String) {
         val alias = toKeyAlias(keychainId)
+=======
+    fun getPublicKey(keyStore: KeyStore, keychainId: String, ): PublicKey {
+        val alias = toKeyAlias(keychainId)
+        checkKeyExists(keyStore, alias)
+        return keyStore.getCertificate(alias).publicKey
+    }
+
+    fun getPrivateKey(keyStore: KeyStore, keychainId: String, ): PrivateKey {
+        val alias = toKeyAlias(keychainId)
+        checkKeyExists(keyStore, alias)
+        return keyStore.getKey(alias, null) as PrivateKey
+    }
+
+    fun deleteKeyPair(keyStore: KeyStore, keychainId: String, ) {
+        val alias = toKeyAlias(keychainId)
+        checkKeyExists(keyStore, alias)
+        keyStore.deleteEntry(alias)
+    }
+
+    private fun toKeyAlias(keychainId: String, ): String {
+        return keychainId + AUTH_KEY_ALIAS_SUFFIX
+    }
+
+    fun checkKeyExists(keyStore: KeyStore, keychainId: String, ) {
+        checkKeyExistsWithAlias(keyStore, toKeyAlias(keychainId))
+    }
+
+    private fun checkKeyExistsWithAlias(keyStore: KeyStore, alias: String) {
+>>>>>>> a86e983 (fix: compilation issues)
         if (!keyStore.containsAlias(alias)) {
             throw Exception("android key store has no rsa key pair with alias $alias")
         }

@@ -5,7 +5,7 @@ import com.google.crypto.tink.signature.SignatureConfig
 
 actual object Capillary {
     actual fun initialize() {
-        com.google.crypto.tink.Config.register(SignatureConfig.LATEST);
+        com.google.crypto.tink.Config.register(SignatureConfig.LATEST)
         AeadConfig.register()
     }
 }

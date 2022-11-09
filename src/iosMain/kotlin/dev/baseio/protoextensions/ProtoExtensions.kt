@@ -3,43 +3,10 @@ package dev.baseio.protoextensions
 import dev.baseio.slackdata.securepush.*
 import dev.baseio.slackdata.protos.*
 
-actual fun KMWrappedWebPushPublicKey.toByteArray(): ByteArray {
-    return WrappedWebPushPublicKey.newBuilder()
-        .addAllAuthsecret(this.authsecretList.map {
-            SKByteArrayElement.newBuilder()
-                .setByte(it.byte).build()
-        })
-        .addAllKeybytes(this.keybytesList.map {
-            SKByteArrayElement.newBuilder()
-                .setByte(it.byte).build()
-        })
-        .build().toByteArray()
-}
-
 actual fun KMSlackPublicKey.toByteArray(): ByteArray {
     val builder = SlackPublicKey.newBuilder()
-    builder.setKeychainuniqueid(keychainuniqueid)
-    builder.setSerialnumber(serialnumber)
-    builder.setIsauth(isauth)
     builder.addAllKeybytes(keybytesList.map { SKByteArrayElement.newBuilder().setByte(it.byte).build() })
     return builder.build().toByteArray()
-}
-
-
-actual fun KMWrappedWebPushPrivateKey.toByteArray(): ByteArray {
-    return WrappedWebPushPrivateKey.newBuilder()
-        .addAllAuthsecret(this.authsecretList.map {
-            SKByteArrayElement.newBuilder()
-                .setByte(it.byte).build()
-        })
-        .addAllPrivatekeybytes(this.privatekeybytesList.map {
-            SKByteArrayElement.newBuilder()
-                .setByte(it.byte).build()
-        }).addAllPublickeybytes(this.publickeybytesList.map {
-            SKByteArrayElement.newBuilder()
-                .setByte(it.byte).build()
-        })
-        .build().toByteArray()
 }
 
 actual fun KMHybridRsaCiphertext.toByteArray(): ByteArray {

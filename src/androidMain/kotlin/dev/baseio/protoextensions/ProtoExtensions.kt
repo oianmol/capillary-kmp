@@ -11,6 +11,10 @@ actual fun KMSlackPublicKey.toByteArray(): ByteArray {
     return builder.build().toByteArray()
 }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> a86e983 (fix: compilation issues)
 actual fun KMHybridRsaCiphertext.toByteArray(): ByteArray {
     return HybridRsaCiphertext.newBuilder()
         .addAllSymmetrickeyciphertext(this.symmetrickeyciphertextList.map {

@@ -1,14 +1,14 @@
 package dev.baseio.security
 
 actual class RsaEcdsaKeyManager : KeyManager() {
-    actual fun rawDeleteKeyPair(isAuth: Boolean) {
+    actual fun rawDeleteKeyPair() {
     }
 
-    actual fun rawGetPublicKey(isAuth: Boolean): ByteArray {
+    actual fun rawGetPublicKey(): ByteArray {
         TODO("Not yet implemented")
     }
 
-    actual fun rawGenerateKeyPair(isAuth: Boolean) {
+    actual fun rawGenerateKeyPair() {
     }
 
     actual fun decrypt(cipherText: ByteArray, contextInfo: ByteArray?): ByteArray? {
