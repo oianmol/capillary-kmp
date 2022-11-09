@@ -7,12 +7,6 @@ import java.security.PublicKey
 
 
 expect class RsaEcdsaKeyManager {
-<<<<<<< HEAD
-    fun rawDeleteKeyPair()
-    fun rawGetPublicKey(): ByteArray
-    fun rawGenerateKeyPair()
-    fun decrypt(cipherText: ByteArray, contextInfo: ByteArray?): ByteArray?
-=======
     fun rawGenerateKeyPair()
     fun rawGetPublicKey(): ByteArray
     fun rawDeleteKeyPair()
@@ -32,5 +26,4 @@ fun RsaEcdsaKeyManager.getPublicKey(): ByteArray {
         )
 
     }.toByteArray()
->>>>>>> a86e983 (fix: compilation issues)
 }

@@ -1,9 +1,8 @@
 package dev.baseio.protoextensions
 
-import dev.baseio.slackdata.common.SKByteArrayElement
-import dev.baseio.slackdata.common.kmSKByteArrayElement
 import dev.baseio.slackdata.securepush.*
 import dev.baseio.slackdata.protos.*
+import dev.baseio.slackdata.common.*
 
 actual fun KMSlackPublicKey.toByteArray(): ByteArray {
     val builder = SlackPublicKey.newBuilder()
@@ -11,10 +10,6 @@ actual fun KMSlackPublicKey.toByteArray(): ByteArray {
     return builder.build().toByteArray()
 }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> a86e983 (fix: compilation issues)
 actual fun KMHybridRsaCiphertext.toByteArray(): ByteArray {
     return HybridRsaCiphertext.newBuilder()
         .addAllSymmetrickeyciphertext(this.symmetrickeyciphertextList.map {
