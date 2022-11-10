@@ -4,7 +4,6 @@ import com.google.crypto.tink.BinaryKeysetReader
 import com.google.crypto.tink.CleartextKeysetHandle
 import com.google.crypto.tink.KeysetHandle
 import com.google.crypto.tink.PublicKeyVerify
-import java.io.InputStream
 import java.security.KeyStore
 import java.security.PrivateKey
 import java.security.PublicKey
@@ -16,8 +15,8 @@ actual class RsaEcdsaKeyManager(
     chainId: String = "1",
     senderVerificationKey: ByteArray
 ) {
-    private val keychainId = "rsa_ecdsa_jvm$chainId"
-    private var keyStore: KeyStore
+    val keychainId = "rsa_ecdsa_jvm$chainId"
+    var keyStore: KeyStore
     private var senderVerifier: PublicKeyVerify
 
     init {
@@ -26,7 +25,9 @@ actual class RsaEcdsaKeyManager(
 
         senderVerifier = verificationKeyHandle.getPrimitive(PublicKeyVerify::class.java)
         keyStore = JVMSecurityProvider.loadKeyStore()
-        rawGenerateKeyPair()
+        if (!keyStore.containsAlias(keychainId)) {
+            rawGenerateKeyPair()
+        }
     }
 
     actual fun rawGenerateKeyPair() {
@@ -59,5 +60,8 @@ actual class RsaEcdsaKeyManager(
     }
 
     actual fun getPrivateKey(): PrivateKey = JVMKeyStoreRsaUtils.getPrivateKey()
-    actual fun getPublicKey(): PublicKey =  JVMKeyStoreRsaUtils.getPublicKey()
+    actual fun getPublicKey(): PublicKey = JVMKeyStoreRsaUtils.getPublicKey()
+    actual fun getPublicKeyFromBytes(publicKeyBytes: ByteArray): PublicKey {
+        return JVMKeyStoreRsaUtils.getPublicKeyFromBytes(publicKeyBytes)
+    }
 }

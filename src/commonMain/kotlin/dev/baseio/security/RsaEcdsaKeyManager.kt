@@ -1,8 +1,5 @@
 package dev.baseio.security
 
-import capillary.kmp.kmByteArrayElement
-import capillary.kmp.kmSlackPublicKey
-import dev.baseio.protoextensions.toByteArray
 import java.security.PrivateKey
 import java.security.PublicKey
 
@@ -16,6 +13,7 @@ expect class RsaEcdsaKeyManager {
     actual fun encrypt(plainData: ByteArray, publicKeyBytes: PublicKey): ByteArray
     fun getPrivateKey(): PrivateKey
     fun getPublicKey(): PublicKey
+    fun getPublicKeyFromBytes(publicKeyBytes: ByteArray): PublicKey
 }
 
 fun RsaEcdsaKeyManager.getPublicKey(): ByteArray {

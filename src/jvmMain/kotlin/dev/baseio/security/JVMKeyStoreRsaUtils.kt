@@ -2,6 +2,7 @@ package dev.baseio.security
 
 import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
+import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.InputStream
@@ -16,6 +17,7 @@ import java.security.PublicKey
 import java.security.spec.RSAKeyGenParameterSpec
 import java.security.spec.RSAPrivateKeySpec
 import java.security.spec.RSAPublicKeySpec
+import java.security.spec.X509EncodedKeySpec
 
 /**
  * AndroidKeyStoreRsaUtils provides utility methods to generate RSA key pairs in Android Keystore
@@ -24,11 +26,13 @@ import java.security.spec.RSAPublicKeySpec
  * levels are publicly released.
  */
 object JVMKeyStoreRsaUtils {
-    private const val NO_AUTH_KEY_ALIAS_SUFFIX = "_capillary_rsa_no_auth"
+    private const val KEY_ALIAS_SUFFIX = "_capillary_rsa"
     private const val KEY_SIZE = 2048
-    private const val KEY_DURATION_YEARS = 100
 
     fun generateKeyPair() {
+        if (File(pubicKeyFile()).exists()) {
+            return
+        }
         val rsaSpec = RSAKeyGenParameterSpec(KEY_SIZE, RSAKeyGenParameterSpec.F4)
 
         val keyPairGenerator = KeyPairGenerator.getInstance("RSA")
@@ -48,7 +52,7 @@ object JVMKeyStoreRsaUtils {
         saveToFile(privateKeyFile(), privateKey.modulus, privateKey.privateExponent)
     }
 
-    private fun pubicKeyFile() = toKeyAlias( "publicKey")
+    private fun pubicKeyFile() = toKeyAlias("publicKey")
     private fun privateKeyFile() = toKeyAlias("privateKey")
 
     private fun saveToFile(
@@ -115,9 +119,13 @@ object JVMKeyStoreRsaUtils {
     }
 
     private fun toKeyAlias(keychainId: String): String {
-        return keychainId + NO_AUTH_KEY_ALIAS_SUFFIX
+        return keychainId + KEY_ALIAS_SUFFIX
     }
 
-    val compatibleRsaPadding: RsaEcdsaConstants.Padding
-        get() = RsaEcdsaConstants.Padding.OAEP
+    fun getPublicKeyFromBytes(publicKeyBytes: ByteArray): PublicKey {
+        return KeyFactory.getInstance("RSA").generatePublic(
+            X509EncodedKeySpec(publicKeyBytes)
+        )
+    }
+
 }

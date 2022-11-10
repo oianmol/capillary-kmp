@@ -1,7 +1,6 @@
 package dev.baseio.security
 
 import java.io.IOException
-import java.io.InputStream
 import java.security.GeneralSecurityException
 import java.security.KeyStore
 import java.security.PrivateKey
@@ -32,7 +31,7 @@ actual class RsaEcdsaKeyManager(
     }
 
     actual fun rawGenerateKeyPair() {
-        AndroidKeyStoreRsaUtils.generateKeyPair(keychainId)
+        AndroidKeyStoreRsaUtils.generateKeyPair(keychainId,keyStore)
     }
 
     actual fun rawGetPublicKey(): ByteArray {
@@ -45,7 +44,9 @@ actual class RsaEcdsaKeyManager(
 
     actual fun decrypt(cipherText: ByteArray, privateKey: PrivateKey): ByteArray {
         return HybridRsaUtils.decrypt(
-            cipherText, privateKey, RsaEcdsaConstants.Padding.OAEP,
+            cipherText,
+            privateKey,
+            RsaEcdsaConstants.Padding.OAEP,
             RsaEcdsaConstants.OAEP_PARAMETER_SPEC
         )
     }
@@ -59,12 +60,16 @@ actual class RsaEcdsaKeyManager(
         )
     }
 
-    actual fun getPrivateKey():PrivateKey{
+    actual fun getPrivateKey(): PrivateKey {
         return AndroidKeyStoreRsaUtils.getPrivateKey(keyStore, keychainId)
     }
 
     actual fun getPublicKey(): PublicKey {
         return AndroidKeyStoreRsaUtils.getPublicKey(keyStore, keychainId)
+    }
+
+    actual fun getPublicKeyFromBytes(publicKeyBytes: ByteArray): PublicKey {
+        return AndroidKeyStoreRsaUtils.getPublicKeyFromBytes(publicKeyBytes)
     }
 
 
