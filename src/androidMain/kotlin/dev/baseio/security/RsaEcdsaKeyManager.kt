@@ -1,8 +1,6 @@
 package dev.baseio.security
 
-import dev.baseio.protoextensions.toByteArray
 import java.io.IOException
-import capillary.kmp.*
 import java.io.InputStream
 import java.security.GeneralSecurityException
 import java.security.KeyStore
@@ -14,15 +12,15 @@ import java.security.PublicKey
  */
 actual class RsaEcdsaKeyManager(
     chainId: String,
-    senderVerificationKey: InputStream
+    senderVerificationKey: ByteArray
 ) {
-    private val keychainId = "rsa_ecdsa_android$chainId"
-    private var keyStore: KeyStore
+    val keychainId = "rsa_ecdsa_android$chainId"
+    var keyStore: KeyStore
     private var senderVerifier: com.google.crypto.tink.PublicKeyVerify
 
     init {
         val verificationKeyHandle: com.google.crypto.tink.KeysetHandle = com.google.crypto.tink.CleartextKeysetHandle
-            .read(com.google.crypto.tink.BinaryKeysetReader.withInputStream(senderVerificationKey))
+            .read(com.google.crypto.tink.BinaryKeysetReader.withBytes(senderVerificationKey))
         senderVerifier = com.google.crypto.tink.signature.PublicKeyVerifyFactory.getPrimitive(verificationKeyHandle)
         keyStore = KeyStore.getInstance(AndroidSecurityProvider.KEYSTORE_ANDROID)
         try {
@@ -30,6 +28,7 @@ actual class RsaEcdsaKeyManager(
         } catch (e: IOException) {
             throw GeneralSecurityException("unable to load keystore", e)
         }
+        rawGenerateKeyPair()
     }
 
     actual fun rawGenerateKeyPair() {
@@ -37,26 +36,16 @@ actual class RsaEcdsaKeyManager(
     }
 
     actual fun rawGetPublicKey(): ByteArray {
-        val publicKeyBytes: ByteArray = AndroidKeyStoreRsaUtils.getPublicKey(keyStore, keychainId).encoded
-        return kmWrappedRsaEcdsaPublicKey {
-            padding = AndroidKeyStoreRsaUtils.compatibleRsaPadding.name
-            keybytesList.addAll(
-                publicKeyBytes.map {
-                    kmByteArrayElement {
-                        byte = it.toInt()
-                    }
-                })
-        }.toByteArray()
+        return AndroidKeyStoreRsaUtils.getPublicKey(keyStore, keychainId).encoded
     }
 
     actual fun rawDeleteKeyPair() {
         AndroidKeyStoreRsaUtils.deleteKeyPair(keyStore, keychainId)
     }
 
-    actual fun decrypt(cipherText: ByteArray): ByteArray {
-        val recipientPrivateKey: PrivateKey = AndroidKeyStoreRsaUtils.getPrivateKey(keyStore, keychainId)
+    actual fun decrypt(cipherText: ByteArray, privateKey: PrivateKey): ByteArray {
         return HybridRsaUtils.decrypt(
-            cipherText, recipientPrivateKey, AndroidKeyStoreRsaUtils.compatibleRsaPadding,
+            cipherText, privateKey, RsaEcdsaConstants.Padding.OAEP,
             RsaEcdsaConstants.OAEP_PARAMETER_SPEC
         )
     }
@@ -68,6 +57,14 @@ actual class RsaEcdsaKeyManager(
             RsaEcdsaConstants.Padding.OAEP,
             RsaEcdsaConstants.OAEP_PARAMETER_SPEC
         )
+    }
+
+    actual fun getPrivateKey():PrivateKey{
+        return AndroidKeyStoreRsaUtils.getPrivateKey(keyStore, keychainId)
+    }
+
+    actual fun getPublicKey(): PublicKey {
+        return AndroidKeyStoreRsaUtils.getPublicKey(keyStore, keychainId)
     }
 
 

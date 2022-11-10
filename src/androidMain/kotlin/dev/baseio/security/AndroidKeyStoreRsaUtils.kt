@@ -41,34 +41,21 @@ object AndroidKeyStoreRsaUtils {
 
     fun getPublicKey(keyStore: KeyStore, keychainId: String, ): PublicKey {
         val alias = toKeyAlias(keychainId)
-        checkKeyExists(keyStore, alias)
         return keyStore.getCertificate(alias).publicKey
     }
 
     fun getPrivateKey(keyStore: KeyStore, keychainId: String, ): PrivateKey {
         val alias = toKeyAlias(keychainId)
-        checkKeyExists(keyStore, alias)
         return keyStore.getKey(alias, null) as PrivateKey
     }
 
     fun deleteKeyPair(keyStore: KeyStore, keychainId: String, ) {
         val alias = toKeyAlias(keychainId)
-        checkKeyExists(keyStore, alias)
         keyStore.deleteEntry(alias)
     }
 
-    private fun toKeyAlias(keychainId: String, ): String {
+    private fun toKeyAlias(keychainId: String ): String {
         return keychainId + AUTH_KEY_ALIAS_SUFFIX
-    }
-
-    fun checkKeyExists(keyStore: KeyStore, keychainId: String, ) {
-        checkKeyExistsWithAlias(keyStore, toKeyAlias(keychainId))
-    }
-
-    private fun checkKeyExistsWithAlias(keyStore: KeyStore, alias: String) {
-        if (!keyStore.containsAlias(alias)) {
-            throw Exception("android key store has no rsa key pair with alias $alias")
-        }
     }
 
     val compatibleRsaPadding: RsaEcdsaConstants.Padding

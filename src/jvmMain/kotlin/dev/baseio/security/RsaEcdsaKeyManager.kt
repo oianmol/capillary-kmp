@@ -1,12 +1,9 @@
 package dev.baseio.security
 
-import capillary.kmp.kmByteArrayElement
-import capillary.kmp.kmWrappedRsaEcdsaPublicKey
 import com.google.crypto.tink.BinaryKeysetReader
 import com.google.crypto.tink.CleartextKeysetHandle
 import com.google.crypto.tink.KeysetHandle
 import com.google.crypto.tink.PublicKeyVerify
-import dev.baseio.protoextensions.toByteArray
 import java.io.InputStream
 import java.security.KeyStore
 import java.security.PrivateKey
@@ -17,7 +14,7 @@ import java.security.PublicKey
  */
 actual class RsaEcdsaKeyManager(
     chainId: String = "1",
-    senderVerificationKey: InputStream
+    senderVerificationKey: ByteArray
 ) {
     private val keychainId = "rsa_ecdsa_jvm$chainId"
     private var keyStore: KeyStore
@@ -25,10 +22,11 @@ actual class RsaEcdsaKeyManager(
 
     init {
         val verificationKeyHandle: KeysetHandle = CleartextKeysetHandle
-            .read(BinaryKeysetReader.withInputStream(senderVerificationKey))
+            .read(BinaryKeysetReader.withBytes(senderVerificationKey))
 
         senderVerifier = verificationKeyHandle.getPrimitive(PublicKeyVerify::class.java)
         keyStore = JVMSecurityProvider.loadKeyStore()
+        rawGenerateKeyPair()
     }
 
     actual fun rawGenerateKeyPair() {
@@ -36,22 +34,13 @@ actual class RsaEcdsaKeyManager(
     }
 
     actual fun rawGetPublicKey(): ByteArray {
-        val publicKeyBytes: ByteArray = JVMKeyStoreRsaUtils.getPublicKey().encoded
-        return kmWrappedRsaEcdsaPublicKey {
-            padding = JVMKeyStoreRsaUtils.compatibleRsaPadding.name
-            keybytesList.addAll(publicKeyBytes.map {
-                kmByteArrayElement {
-                    byte = it.toInt()
-                }
-            })
-        }.toByteArray()
+        return JVMKeyStoreRsaUtils.getPublicKey().encoded
     }
 
 
-    actual fun decrypt(cipherText: ByteArray): ByteArray {
-        val recipientPrivateKey: PrivateKey = JVMKeyStoreRsaUtils.getPrivateKey()
+    actual fun decrypt(cipherText: ByteArray, privateKey: PrivateKey): ByteArray {
         return HybridRsaUtils.decrypt(
-            cipherText, recipientPrivateKey, JVMKeyStoreRsaUtils.compatibleRsaPadding,
+            cipherText, privateKey, RsaEcdsaConstants.Padding.OAEP,
             RsaEcdsaConstants.OAEP_PARAMETER_SPEC
         )
     }
@@ -68,4 +57,7 @@ actual class RsaEcdsaKeyManager(
     actual fun rawDeleteKeyPair() {
         JVMKeyStoreRsaUtils.deleteKeyPair(keyStore, keychainId)
     }
+
+    actual fun getPrivateKey(): PrivateKey = JVMKeyStoreRsaUtils.getPrivateKey()
+    actual fun getPublicKey(): PublicKey =  JVMKeyStoreRsaUtils.getPublicKey()
 }
