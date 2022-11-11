@@ -21,11 +21,11 @@ actual class RsaEcdsaKeyManager actual constructor(
   }
 
   actual fun rawGenerateKeyPair() {
-    JVMKeyStoreRsaUtils.generateKeyPair()
+    JVMKeyStoreRsaUtils.generateKeyPair(keychainId)
   }
 
   actual fun rawGetPublicKey(): ByteArray {
-    return JVMKeyStoreRsaUtils.getPublicKey().encoded
+    return JVMKeyStoreRsaUtils.getPublicKey(keychainId).encoded
   }
 
 
@@ -50,8 +50,8 @@ actual class RsaEcdsaKeyManager actual constructor(
     JVMKeyStoreRsaUtils.deleteKeyPair(keyStore, keychainId)
   }
 
-  actual fun getPrivateKey(): PrivateKey = JVMKeyStoreRsaUtils.getPrivateKey()
-  actual fun getPublicKey(): PublicKey = JVMKeyStoreRsaUtils.getPublicKey()
+  actual fun getPrivateKey(): PrivateKey = JVMKeyStoreRsaUtils.getPrivateKey(keychainId)
+  actual fun getPublicKey(): PublicKey = JVMKeyStoreRsaUtils.getPublicKey(keychainId)
   actual fun getPublicKeyFromBytes(publicKeyBytes: ByteArray): PublicKey {
     return JVMKeyStoreRsaUtils.getPublicKeyFromBytes(publicKeyBytes)
   }

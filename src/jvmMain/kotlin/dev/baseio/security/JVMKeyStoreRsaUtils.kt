@@ -26,11 +26,13 @@ import java.security.spec.X509EncodedKeySpec
  * levels are publicly released.
  */
 object JVMKeyStoreRsaUtils {
-    private const val KEY_ALIAS_SUFFIX = "_capillary_rsa"
+    private const val KEY_ALIAS_SUFFIX_PRIVATE = "_capillary_rsa_private"
+    private const val KEY_ALIAS_SUFFIX_PUBLIC = "_capillary_rsa_public"
+
     private const val KEY_SIZE = 2048
 
-    fun generateKeyPair() {
-        if (File(pubicKeyFile()).exists()) {
+    fun generateKeyPair(chainId:String) {
+        if (File(pubicKeyFile(toKeyAlias(chainId, KEY_ALIAS_SUFFIX_PUBLIC))).exists()) {
             return
         }
         val rsaSpec = RSAKeyGenParameterSpec(KEY_SIZE, RSAKeyGenParameterSpec.F4)
@@ -48,12 +50,12 @@ object JVMKeyStoreRsaUtils {
             keyPair.private,
             RSAPrivateKeySpec::class.java
         )
-        saveToFile(pubicKeyFile(), publicKey.modulus, publicKey.publicExponent)
-        saveToFile(privateKeyFile(), privateKey.modulus, privateKey.privateExponent)
+        saveToFile(pubicKeyFile(chainId), publicKey.modulus, publicKey.publicExponent)
+        saveToFile(privateKeyFile(chainId), privateKey.modulus, privateKey.privateExponent)
     }
 
-    private fun pubicKeyFile() = toKeyAlias("publicKey")
-    private fun privateKeyFile() = toKeyAlias("privateKey")
+    private fun pubicKeyFile(chainId:String) = toKeyAlias(chainId, KEY_ALIAS_SUFFIX_PUBLIC)
+    private fun privateKeyFile(chainId:String) = toKeyAlias(chainId,KEY_ALIAS_SUFFIX_PRIVATE)
 
     private fun saveToFile(
         fileName: String,
@@ -72,12 +74,12 @@ object JVMKeyStoreRsaUtils {
         }
     }
 
-    fun getPublicKey(): PublicKey {
-        return readPublicKey()
+    fun getPublicKey(chainId: String): PublicKey {
+        return readPublicKey(chainId)
     }
 
-    private fun readPublicKey(): PublicKey {
-        val `in`: InputStream = FileInputStream(pubicKeyFile())
+    private fun readPublicKey(chainId: String): PublicKey {
+        val `in`: InputStream = FileInputStream(pubicKeyFile(chainId))
         val oin = ObjectInputStream(BufferedInputStream(`in`))
         return try {
             val m = oin.readObject() as BigInteger
@@ -92,8 +94,8 @@ object JVMKeyStoreRsaUtils {
         }
     }
 
-    private fun readPrivateKey(): PrivateKey {
-        val `in`: InputStream = FileInputStream(privateKeyFile())
+    private fun readPrivateKey(chainId: String): PrivateKey {
+        val `in`: InputStream = FileInputStream(privateKeyFile(chainId))
         val oin = ObjectInputStream(BufferedInputStream(`in`))
         return try {
             val m = oin.readObject() as BigInteger
@@ -108,18 +110,18 @@ object JVMKeyStoreRsaUtils {
         }
     }
 
-    fun getPrivateKey(): PrivateKey {
-        return readPrivateKey()
+    fun getPrivateKey(chainId: String): PrivateKey {
+        return readPrivateKey(chainId)
     }
 
     fun deleteKeyPair(keyStore: KeyStore, keychainId: String) {
-        val alias = toKeyAlias(keychainId)
-        keyStore.deleteEntry(alias)
+        keyStore.deleteEntry(toKeyAlias(keychainId, KEY_ALIAS_SUFFIX_PUBLIC))
+        keyStore.deleteEntry(toKeyAlias(keychainId, KEY_ALIAS_SUFFIX_PRIVATE))
 
     }
 
-    private fun toKeyAlias(keychainId: String): String {
-        return keychainId + KEY_ALIAS_SUFFIX
+    private fun toKeyAlias(keychainId: String,key:String): String {
+        return keychainId + key
     }
 
     fun getPublicKeyFromBytes(publicKeyBytes: ByteArray): PublicKey {
