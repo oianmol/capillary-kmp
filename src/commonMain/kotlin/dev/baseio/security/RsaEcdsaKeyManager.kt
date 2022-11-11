@@ -4,18 +4,32 @@ import java.security.PrivateKey
 import java.security.PublicKey
 
 
-expect class RsaEcdsaKeyManager {
-    fun rawGenerateKeyPair()
-    fun rawGetPublicKey(): ByteArray
-    fun rawDeleteKeyPair()
-
-    actual fun decrypt(cipherText: ByteArray, privateKey: PrivateKey): ByteArray
-    actual fun encrypt(plainData: ByteArray, publicKeyBytes: PublicKey): ByteArray
-    fun getPrivateKey(): PrivateKey
-    fun getPublicKey(): PublicKey
-    fun getPublicKeyFromBytes(publicKeyBytes: ByteArray): PublicKey
+expect class RsaEcdsaKeyManager(chainId: String) {
+  fun rawGenerateKeyPair()
+  fun rawGetPublicKey(): ByteArray
+  fun rawDeleteKeyPair()
+  fun decrypt(cipherText: ByteArray, privateKey: PrivateKey): ByteArray
+  fun encrypt(plainData: ByteArray, publicKeyBytes: PublicKey): ByteArray
+  fun getPrivateKey(): PrivateKey
+  fun getPublicKey(): PublicKey
+  fun getPublicKeyFromBytes(publicKeyBytes: ByteArray): PublicKey
 }
 
-fun RsaEcdsaKeyManager.getPublicKey(): ByteArray {
-    return rawGetPublicKey()
+object RsaEcdsaKeyManagerInstances {
+  private val instances = hashMapOf<String, RsaEcdsaKeyManager>()
+  val lock = Any()
+  fun getInstance(chainId: String): RsaEcdsaKeyManager {
+    if (instances.containsKey(chainId)) {
+      return instances[chainId]!!
+    }
+    synchronized(lock) {
+      if (instances.containsKey(chainId)) {
+        return instances[chainId]!!
+      }
+      return RsaEcdsaKeyManager(chainId).also {
+        instances[chainId] = it
+      }
+    }
+
+  }
 }
