@@ -17,7 +17,7 @@ expect class RsaEcdsaKeyManager(chainId: String) {
 
 object RsaEcdsaKeyManagerInstances {
   private val instances = hashMapOf<String, RsaEcdsaKeyManager>()
-  val lock = Any()
+  private val lock = Any()
   fun getInstance(chainId: String): RsaEcdsaKeyManager {
     if (instances.containsKey(chainId)) {
       return instances[chainId]!!
