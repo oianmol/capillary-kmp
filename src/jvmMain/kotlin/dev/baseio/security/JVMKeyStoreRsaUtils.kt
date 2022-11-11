@@ -9,11 +9,7 @@ import java.io.InputStream
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
 import java.math.BigInteger
-import java.security.KeyFactory
-import java.security.KeyPairGenerator
-import java.security.KeyStore
-import java.security.PrivateKey
-import java.security.PublicKey
+import java.security.*
 import java.security.spec.RSAKeyGenParameterSpec
 import java.security.spec.RSAPrivateKeySpec
 import java.security.spec.RSAPublicKeySpec
@@ -118,6 +114,8 @@ object JVMKeyStoreRsaUtils {
         keyStore.deleteEntry(toKeyAlias(keychainId, KEY_ALIAS_SUFFIX_PUBLIC))
         keyStore.deleteEntry(toKeyAlias(keychainId, KEY_ALIAS_SUFFIX_PRIVATE))
 
+        File(pubicKeyFile(keychainId)).delete()
+        File(privateKeyFile(keychainId)).delete()
     }
 
     private fun toKeyAlias(keychainId: String,key:String): String {
