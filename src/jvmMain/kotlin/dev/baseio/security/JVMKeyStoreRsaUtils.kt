@@ -20,7 +20,7 @@ object JVMKeyStoreRsaUtils {
     private const val KEY_SIZE = 2048
 
     fun generateKeyPair(chainId: String) {
-        if (File(pubicKeyFile(toKeyAlias(chainId, KEY_ALIAS_SUFFIX_PUBLIC))).exists()) {
+        if (File(pubicKeyFile(chainId)).exists()) {
             return
         }
         val rsaSpec = RSAKeyGenParameterSpec(KEY_SIZE, RSAKeyGenParameterSpec.F4)
