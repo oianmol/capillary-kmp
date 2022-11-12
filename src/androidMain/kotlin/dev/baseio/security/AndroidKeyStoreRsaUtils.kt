@@ -24,20 +24,23 @@ object AndroidKeyStoreRsaUtils {
 
     fun generateKeyPair(keychainId: String, keyStore: KeyStore) {
         val keyAlias = toKeyAlias(keychainId)
-        if(keyStore.containsAlias(keyAlias)){
+        if (keyStore.containsAlias(keyAlias)) {
             return
         }
         val rsaSpec = RSAKeyGenParameterSpec(KEY_SIZE, RSAKeyGenParameterSpec.F4)
         val spec: AlgorithmParameterSpec
         val specBuilder: KeyGenParameterSpec.Builder =
-            KeyGenParameterSpec.Builder(keyAlias, KeyProperties.PURPOSE_DECRYPT)
+            KeyGenParameterSpec.Builder(keyAlias, KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT)
                 .setAlgorithmParameterSpec(rsaSpec)
                 .setDigests(KeyProperties.DIGEST_SHA256)
                 .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_RSA_OAEP)
         spec = specBuilder.build()
-        val keyPairGenerator = KeyPairGenerator.getInstance("RSA", KEYSTORE_ANDROID)
+
+
+        val keyPairGenerator = KeyPairGenerator.getInstance("RSA",KEYSTORE_ANDROID)
         keyPairGenerator.initialize(spec)
-        keyPairGenerator.generateKeyPair()
+        val keyPair = keyPairGenerator.generateKeyPair()
+
     }
 
     fun getPublicKey(keyStore: KeyStore, keychainId: String): PublicKey {

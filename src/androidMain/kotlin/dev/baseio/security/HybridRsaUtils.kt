@@ -18,7 +18,7 @@ import java.security.PublicKey
 import javax.crypto.Cipher
 import javax.crypto.spec.OAEPParameterSpec
 
-object HybridRsaUtils {
+actual object HybridRsaUtils {
     private val SYMMETRIC_KEY_TEMPLATE = KeyTemplates.get("AES128_GCM")
     private val emptyEad = ByteArray(0)
 
@@ -33,10 +33,10 @@ object HybridRsaUtils {
      * @throws GeneralSecurityException if encryption fails.
      */
     @Throws(GeneralSecurityException::class)
-    fun encrypt(
+   actual fun encrypt(
         plaintext: ByteArray?,
         publicKey: PublicKey?,
-        padding: RsaEcdsaConstants.Padding?,
+        padding: RsaEcdsaConstants.Padding,
         oaepParams: OAEPParameterSpec?
     ): ByteArray {
         // Initialize RSA encryption cipher.
@@ -88,7 +88,7 @@ object HybridRsaUtils {
      * @throws GeneralSecurityException if decryption fails.
      */
     @Throws(GeneralSecurityException::class)
-    fun decrypt(
+   actual fun decrypt(
         ciphertext: ByteArray,
         privateKey: PrivateKey,
         padding: RsaEcdsaConstants.Padding,
