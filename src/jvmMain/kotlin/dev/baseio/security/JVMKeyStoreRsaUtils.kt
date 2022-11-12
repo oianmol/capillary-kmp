@@ -19,7 +19,7 @@ object JVMKeyStoreRsaUtils {
 
     private const val KEY_SIZE = 2048
 
-    fun generateKeyPair(chainId:String) {
+    fun generateKeyPair(chainId: String) {
         if (File(pubicKeyFile(toKeyAlias(chainId, KEY_ALIAS_SUFFIX_PUBLIC))).exists()) {
             return
         }
@@ -33,13 +33,14 @@ object JVMKeyStoreRsaUtils {
         val rsaPrivateKey: RSAPrivateKey = keyPair.private as RSAPrivateKey
 
         val pkcs8EncodedKeySpec = PKCS8EncodedKeySpec(rsaPrivateKey.encoded)
-
+        val kf = KeyFactory.getInstance("RSA")
+        val privateKey = kf.generatePrivate(pkcs8EncodedKeySpec) as RSAPrivateKey
         saveToFile(pubicKeyFile(chainId), rsaPublicKey.modulus, rsaPublicKey.publicExponent)
-        saveToFile(privateKeyFile(chainId), rsaPrivateKey.modulus, rsaPrivateKey.privateExponent)
+        saveToFile(privateKeyFile(chainId), privateKey.modulus, privateKey.privateExponent)
     }
 
-    private fun pubicKeyFile(chainId:String) = toKeyAlias(chainId, KEY_ALIAS_SUFFIX_PUBLIC)
-    private fun privateKeyFile(chainId:String) = toKeyAlias(chainId,KEY_ALIAS_SUFFIX_PRIVATE)
+    private fun pubicKeyFile(chainId: String) = toKeyAlias(chainId, KEY_ALIAS_SUFFIX_PUBLIC)
+    private fun privateKeyFile(chainId: String) = toKeyAlias(chainId, KEY_ALIAS_SUFFIX_PRIVATE)
 
     private fun saveToFile(
         fileName: String,
