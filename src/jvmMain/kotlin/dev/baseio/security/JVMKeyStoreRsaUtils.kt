@@ -1,19 +1,11 @@
 package dev.baseio.security
 
-import java.io.BufferedInputStream
-import java.io.BufferedOutputStream
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.io.InputStream
-import java.io.ObjectInputStream
-import java.io.ObjectOutputStream
+import java.io.*
 import java.math.BigInteger
 import java.security.*
-import java.security.spec.RSAKeyGenParameterSpec
-import java.security.spec.RSAPrivateKeySpec
-import java.security.spec.RSAPublicKeySpec
-import java.security.spec.X509EncodedKeySpec
+import java.security.interfaces.RSAPrivateKey
+import java.security.interfaces.RSAPublicKey
+import java.security.spec.*
 
 /**
  * AndroidKeyStoreRsaUtils provides utility methods to generate RSA key pairs in Android Keystore
@@ -37,17 +29,13 @@ object JVMKeyStoreRsaUtils {
         keyPairGenerator.initialize(rsaSpec)
         val keyPair = keyPairGenerator.generateKeyPair()
 
-        val keyFactory: KeyFactory = KeyFactory.getInstance("RSA")
-        val publicKey: RSAPublicKeySpec = keyFactory.getKeySpec(
-            keyPair.public,
-            RSAPublicKeySpec::class.java
-        )
-        val privateKey: RSAPrivateKeySpec = keyFactory.getKeySpec(
-            keyPair.private,
-            RSAPrivateKeySpec::class.java
-        )
-        saveToFile(pubicKeyFile(chainId), publicKey.modulus, publicKey.publicExponent)
-        saveToFile(privateKeyFile(chainId), privateKey.modulus, privateKey.privateExponent)
+        val rsaPublicKey: RSAPublicKey = keyPair.public as RSAPublicKey
+        val rsaPrivateKey: RSAPrivateKey = keyPair.private as RSAPrivateKey
+
+        val pkcs8EncodedKeySpec = PKCS8EncodedKeySpec(rsaPrivateKey.encoded)
+
+        saveToFile(pubicKeyFile(chainId), rsaPublicKey.modulus, rsaPublicKey.publicExponent)
+        saveToFile(privateKeyFile(chainId), rsaPrivateKey.modulus, rsaPrivateKey.privateExponent)
     }
 
     private fun pubicKeyFile(chainId:String) = toKeyAlias(chainId, KEY_ALIAS_SUFFIX_PUBLIC)
