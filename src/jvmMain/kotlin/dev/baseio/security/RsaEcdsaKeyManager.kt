@@ -1,8 +1,6 @@
 package dev.baseio.security
 
 import java.security.KeyStore
-import java.security.PrivateKey
-import java.security.PublicKey
 
 /**
  * An implementation of [RsaEcdsaKeyManager] that supports RSA-ECDSA keys.
@@ -32,8 +30,9 @@ actual class RsaEcdsaKeyManager actual constructor(
   actual fun decrypt(cipherText: ByteArray, privateKey: PrivateKey): ByteArray {
     //val verified = deserializeAndVerify(cipherText)
     return HybridRsaUtils.decrypt(
-      cipherText, privateKey, RsaEcdsaConstants.Padding.OAEP,
-      RsaEcdsaConstants.OAEP_PARAMETER_SPEC
+      cipherText, privateKey,
+      Padding.OAEP,
+      OAEPParameterSpec()
     )
   }
 
@@ -41,8 +40,8 @@ actual class RsaEcdsaKeyManager actual constructor(
     return HybridRsaUtils.encrypt(
       plainData,
       publicKeyBytes,
-      RsaEcdsaConstants.Padding.OAEP,
-      RsaEcdsaConstants.OAEP_PARAMETER_SPEC
+      Padding.OAEP,
+      OAEPParameterSpec()
     )
   }
 

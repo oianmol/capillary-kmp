@@ -37,9 +37,9 @@ kotlin {
             baseName = "capillary-ios"
         }
 
-        ios.deploymentTarget = "14.1"
+        ios.deploymentTarget = "11.0"
 
-        pod("Tink", version = "~> 1.6.1", moduleName = "Tink")
+        //pod("Tink", version = "~> 1.6.1", moduleName = "Tink")
     }
 
     iosX64()
@@ -67,7 +67,7 @@ kotlin {
             )
             dependencies {
                 api(project(":generate_protos"))
-                api("com.google.protobuf:protobuf-java:3.21.8")
+                api("com.google.protobuf:protobuf-java:3.21.9")
                 implementation("io.github.timortel:grpc-multiplatform-lib-jvm:0.2.2")
                 implementation("com.google.crypto.tink:tink:1.7.0") {
                     exclude("com.google.protobuf", module = "*")
@@ -93,7 +93,7 @@ kotlin {
                 implementation("com.google.crypto.tink:apps-webpush:1.7.0") {
                     exclude("com.google.crypto.tink", module = "*")
                 }
-                implementation("com.google.protobuf:protobuf-java:3.21.8")
+                implementation("com.google.protobuf:protobuf-java:3.21.9")
                 implementation("joda-time:joda-time:2.9.9")
                 implementation("com.android.support:support-annotations:28.0.0")
             }

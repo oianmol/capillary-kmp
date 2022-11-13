@@ -35,12 +35,12 @@ actual object HybridRsaUtils {
     actual fun encrypt(
         plaintext: ByteArray?,
         publicKey: PublicKey?,
-        padding: RsaEcdsaConstants.Padding,
+        padding: Padding,
         oaepParams: OAEPParameterSpec?
     ): ByteArray {
         // Initialize RSA encryption cipher.
         val rsaCipher = Cipher.getInstance(padding.transformation)
-        if (padding === RsaEcdsaConstants.Padding.OAEP) {
+        if (padding === Padding.OAEP) {
             rsaCipher.init(Cipher.ENCRYPT_MODE, publicKey?.publicKey, oaepParams?.oaepParamSpec)
         } else {
             rsaCipher.init(Cipher.ENCRYPT_MODE, publicKey?.publicKey)
@@ -90,7 +90,7 @@ actual object HybridRsaUtils {
     actual fun decrypt(
         ciphertext: ByteArray,
         privateKey: PrivateKey,
-        padding: RsaEcdsaConstants.Padding,
+        padding: Padding,
         oaepParams: OAEPParameterSpec
     ): ByteArray {
 
@@ -103,7 +103,7 @@ actual object HybridRsaUtils {
 
         // Initialize RSA decryption cipher.
         val rsaCipher = Cipher.getInstance(padding.transformation)
-        if (padding === RsaEcdsaConstants.Padding.OAEP) {
+        if (padding === Padding.OAEP) {
             rsaCipher.init(Cipher.DECRYPT_MODE, privateKey.privateKey, oaepParams.oaepParamSpec)
         } else {
             rsaCipher.init(Cipher.DECRYPT_MODE, privateKey.privateKey)

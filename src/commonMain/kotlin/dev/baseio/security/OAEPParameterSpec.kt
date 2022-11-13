@@ -1,5 +1,3 @@
 package dev.baseio.security
 
-expect class OAEPParameterSpec {
-
-}
+expect class OAEPParameterSpec constructor()

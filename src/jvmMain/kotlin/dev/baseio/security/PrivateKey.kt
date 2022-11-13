@@ -2,6 +2,6 @@ package dev.baseio.security
 
 import java.security.PrivateKey
 
-actual class PrivateKey {
-  lateinit var privateKey: PrivateKey
+actual class PrivateKey(var privateKey: PrivateKey) {
+  actual var encoded: ByteArray =   TODO("")
 }
