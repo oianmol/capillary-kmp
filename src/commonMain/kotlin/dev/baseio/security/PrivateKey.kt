@@ -1,5 +1,3 @@
 package dev.baseio.security
 
-expect class PrivateKey {
-  var encoded:ByteArray
-}
+expect class PrivateKey
