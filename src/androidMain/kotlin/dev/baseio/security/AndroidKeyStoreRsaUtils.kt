@@ -5,8 +5,6 @@ import android.security.keystore.KeyProperties
 import java.security.KeyFactory
 import java.security.KeyPairGenerator
 import java.security.KeyStore
-import java.security.PrivateKey
-import java.security.PublicKey
 import java.security.spec.AlgorithmParameterSpec
 import java.security.spec.RSAKeyGenParameterSpec
 import java.security.spec.X509EncodedKeySpec
@@ -45,12 +43,12 @@ object AndroidKeyStoreRsaUtils {
 
     fun getPublicKey(keyStore: KeyStore, keychainId: String): PublicKey {
         val alias = toKeyAlias(keychainId)
-        return keyStore.getCertificate(alias).publicKey
+        return PublicKey(keyStore.getCertificate(alias).publicKey)
     }
 
     fun getPrivateKey(keyStore: KeyStore, keychainId: String): PrivateKey {
         val alias = toKeyAlias(keychainId)
-        return keyStore.getKey(alias, null) as PrivateKey
+        return PrivateKey(keyStore.getKey(alias, null) as java.security.PrivateKey)
     }
 
     fun deleteKeyPair(keyStore: KeyStore, keychainId: String) {
@@ -63,9 +61,9 @@ object AndroidKeyStoreRsaUtils {
     }
 
     fun getPublicKeyFromBytes(publicKeyBytes: ByteArray): PublicKey {
-        return KeyFactory.getInstance("RSA").generatePublic(
+        return PublicKey(KeyFactory.getInstance("RSA").generatePublic(
             X509EncodedKeySpec(publicKeyBytes)
-        )
+        ))
     }
 
 }

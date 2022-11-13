@@ -1,19 +1,22 @@
 package dev.baseio.security
 
-expect object HybridRsaUtils {
-
+actual object HybridRsaUtils {
   actual fun encrypt(
     plaintext: ByteArray?,
     publicKey: PublicKey?,
     padding: Padding,
     oaepParams: OAEPParameterSpec?
-  ): ByteArray
+  ): ByteArray {
+    TODO("Not yet implemented")
+  }
 
   actual fun decrypt(
     ciphertext: ByteArray,
     privateKey: PrivateKey,
     padding: Padding,
     oaepParams: OAEPParameterSpec
-  ): ByteArray
+  ): ByteArray {
+    TODO("Not yet implemented")
+  }
 
 }
