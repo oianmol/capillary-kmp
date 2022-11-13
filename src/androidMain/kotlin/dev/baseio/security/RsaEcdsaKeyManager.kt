@@ -3,8 +3,6 @@ package dev.baseio.security
 import java.io.IOException
 import java.security.GeneralSecurityException
 import java.security.KeyStore
-import java.security.PrivateKey
-import java.security.PublicKey
 
 /**
  * An implementation of [RsaEcdsaKeyManager] that supports RSA-ECDSA keys.
@@ -29,7 +27,7 @@ actual class RsaEcdsaKeyManager actual constructor(
   }
 
   actual fun rawGetPublicKey(): ByteArray {
-    return AndroidKeyStoreRsaUtils.getPublicKey(keyStore, keychainId).encoded
+    return AndroidKeyStoreRsaUtils.getPublicKey(keyStore, keychainId).publicKey.encoded
   }
 
   actual fun rawDeleteKeyPair() {
@@ -40,8 +38,8 @@ actual class RsaEcdsaKeyManager actual constructor(
     return HybridRsaUtils.decrypt(
       cipherText,
       privateKey,
-      RsaEcdsaConstants.Padding.OAEP,
-      RsaEcdsaConstants.OAEP_PARAMETER_SPEC
+      Padding.OAEP,
+      OAEPParameterSpec()
     )
   }
 
@@ -49,8 +47,8 @@ actual class RsaEcdsaKeyManager actual constructor(
     return HybridRsaUtils.encrypt(
       plainData,
       publicKeyBytes,
-      RsaEcdsaConstants.Padding.OAEP,
-      RsaEcdsaConstants.OAEP_PARAMETER_SPEC
+      Padding.OAEP,
+      OAEPParameterSpec()
     )
   }
 

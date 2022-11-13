@@ -3,7 +3,7 @@ import io.github.timortel.kotlin_multiplatform_grpc_plugin.GrpcMultiplatformExte
 plugins {
     id("com.android.library")
     kotlin("multiplatform")
-    //kotlin("native.cocoapods")
+    kotlin("native.cocoapods")
     id("io.github.timortel.kotlin-multiplatform-grpc-plugin") version "0.2.2"
 }
 
@@ -28,7 +28,7 @@ kotlin {
     android{
         publishLibraryVariants("release")
     }
-/*    cocoapods {
+    cocoapods {
         version = "1.0"
         summary = ""
         homepage = ""
@@ -37,14 +37,14 @@ kotlin {
             baseName = "capillary-ios"
         }
 
-        ios.deploymentTarget = "14.1"
+        ios.deploymentTarget = "11.0"
 
-        pod("Tink", version = "~> 1.6.1", moduleName = "Tink")
-    }*/
-/*
+        //pod("Tink", version = "~> 1.6.1", moduleName = "Tink")
+    }
+
     iosX64()
     iosArm64()
-    iosSimulatorArm64()*/
+    iosSimulatorArm64()
 
     sourceSets {
         val commonMain by getting {
@@ -67,7 +67,7 @@ kotlin {
             )
             dependencies {
                 api(project(":generate_protos"))
-                api("com.google.protobuf:protobuf-java:3.21.8")
+                api("com.google.protobuf:protobuf-java:3.21.9")
                 implementation("io.github.timortel:grpc-multiplatform-lib-jvm:0.2.2")
                 implementation("com.google.crypto.tink:tink:1.7.0") {
                     exclude("com.google.protobuf", module = "*")
@@ -93,7 +93,7 @@ kotlin {
                 implementation("com.google.crypto.tink:apps-webpush:1.7.0") {
                     exclude("com.google.crypto.tink", module = "*")
                 }
-                implementation("com.google.protobuf:protobuf-java:3.21.8")
+                implementation("com.google.protobuf:protobuf-java:3.21.9")
                 implementation("joda-time:joda-time:2.9.9")
                 implementation("com.android.support:support-annotations:28.0.0")
             }
@@ -103,7 +103,7 @@ kotlin {
                 implementation("junit:junit:4.13.2")
             }
         }
-       /* val iosX64Main by getting
+        val iosX64Main by getting
         val iosArm64Main by getting
         val iosSimulatorArm64Main by getting
         val iosMain by creating {
@@ -114,7 +114,7 @@ kotlin {
             iosX64Main.dependsOn(this)
             iosArm64Main.dependsOn(this)
             iosSimulatorArm64Main.dependsOn(this)
-        }*/
+        }
     }
 }
 
@@ -124,14 +124,14 @@ grpcKotlinMultiplatform {
         OutputTarget.JVM,
         listOf(kotlin.sourceSets.getByName("jvmMain"), kotlin.sourceSets.getByName("androidMain"))
     )
-    /*targetSourcesMap.put(
+   targetSourcesMap.put(
         OutputTarget.IOS,
         listOf(
             kotlin.sourceSets.getByName("iosArm64Main"),
             kotlin.sourceSets.getByName("iosSimulatorArm64Main"),
             kotlin.sourceSets.getByName("iosX64Main")
         )
-    )*/
+    )
     //Specify the folders where your proto files are located, you can list multiple.
     protoSourceFolders.set(listOf(projectDir.resolve("protos/src/main/proto")))
 }

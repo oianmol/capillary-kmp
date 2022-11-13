@@ -15,10 +15,7 @@ import dev.baseio.protoextensions.toKMHybridRsaCiphertext
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.security.GeneralSecurityException
-import java.security.PrivateKey
-import java.security.PublicKey
 import javax.crypto.Cipher
-import javax.crypto.spec.OAEPParameterSpec
 
 actual object HybridRsaUtils {
     private val SYMMETRIC_KEY_TEMPLATE = KeyTemplates.get("AES128_GCM")
@@ -38,15 +35,15 @@ actual object HybridRsaUtils {
     actual fun encrypt(
         plaintext: ByteArray?,
         publicKey: PublicKey?,
-        padding: RsaEcdsaConstants.Padding,
+        padding: Padding,
         oaepParams: OAEPParameterSpec?
     ): ByteArray {
         // Initialize RSA encryption cipher.
         val rsaCipher = Cipher.getInstance(padding.transformation)
-        if (padding === RsaEcdsaConstants.Padding.OAEP) {
-            rsaCipher.init(Cipher.ENCRYPT_MODE, publicKey, oaepParams)
+        if (padding === Padding.OAEP) {
+            rsaCipher.init(Cipher.ENCRYPT_MODE, publicKey?.publicKey, oaepParams?.oaepParamSpec)
         } else {
-            rsaCipher.init(Cipher.ENCRYPT_MODE, publicKey)
+            rsaCipher.init(Cipher.ENCRYPT_MODE, publicKey?.publicKey)
         }
 
         // Generate symmetric key and its ciphertext.
@@ -93,7 +90,7 @@ actual object HybridRsaUtils {
     actual fun decrypt(
         ciphertext: ByteArray,
         privateKey: PrivateKey,
-        padding: RsaEcdsaConstants.Padding,
+        padding: Padding,
         oaepParams: OAEPParameterSpec
     ): ByteArray {
 
@@ -106,10 +103,10 @@ actual object HybridRsaUtils {
 
         // Initialize RSA decryption cipher.
         val rsaCipher = Cipher.getInstance(padding.transformation)
-        if (padding === RsaEcdsaConstants.Padding.OAEP) {
-            rsaCipher.init(Cipher.DECRYPT_MODE, privateKey, oaepParams)
+        if (padding === Padding.OAEP) {
+            rsaCipher.init(Cipher.DECRYPT_MODE, privateKey.privateKey, oaepParams.oaepParamSpec)
         } else {
-            rsaCipher.init(Cipher.DECRYPT_MODE, privateKey)
+            rsaCipher.init(Cipher.DECRYPT_MODE, privateKey.privateKey)
         }
 
         // Retrieve symmetric key.

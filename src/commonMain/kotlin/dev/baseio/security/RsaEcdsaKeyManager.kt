@@ -1,9 +1,5 @@
 package dev.baseio.security
 
-import java.security.PrivateKey
-import java.security.PublicKey
-
-
 expect class RsaEcdsaKeyManager(chainId: String) {
   fun rawGenerateKeyPair()
   fun rawGetPublicKey(): ByteArray
@@ -22,14 +18,9 @@ object RsaEcdsaKeyManagerInstances {
     if (instances.containsKey(chainId)) {
       return instances[chainId]!!
     }
-    synchronized(lock) {
-      if (instances.containsKey(chainId)) {
-        return instances[chainId]!!
-      }
-      return RsaEcdsaKeyManager(chainId).also {
-        instances[chainId] = it
-      }
+    // TODO make this synchronized ?
+    return RsaEcdsaKeyManager(chainId).also {
+      instances[chainId] = it
     }
-
   }
 }

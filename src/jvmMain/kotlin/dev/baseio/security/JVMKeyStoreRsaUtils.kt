@@ -71,7 +71,7 @@ object JVMKeyStoreRsaUtils {
             val e = oin.readObject() as BigInteger
             val keySpec = RSAPublicKeySpec(m, e)
             val fact = KeyFactory.getInstance("RSA")
-            fact.generatePublic(keySpec)
+            PublicKey(fact.generatePublic(keySpec) as java.security.PublicKey)
         } catch (e: java.lang.Exception) {
             throw e
         } finally {
@@ -87,7 +87,7 @@ object JVMKeyStoreRsaUtils {
             val e = oin.readObject() as BigInteger
             val keySpec = RSAPrivateKeySpec(m, e)
             val fact = KeyFactory.getInstance("RSA")
-            fact.generatePrivate(keySpec)
+            PrivateKey(fact.generatePrivate(keySpec))
         } catch (e: java.lang.Exception) {
             throw e
         } finally {
@@ -112,9 +112,9 @@ object JVMKeyStoreRsaUtils {
     }
 
     fun getPublicKeyFromBytes(publicKeyBytes: ByteArray): PublicKey {
-        return KeyFactory.getInstance("RSA").generatePublic(
+        return PublicKey(KeyFactory.getInstance("RSA").generatePublic(
             X509EncodedKeySpec(publicKeyBytes)
-        )
+        ))
     }
 
 }
