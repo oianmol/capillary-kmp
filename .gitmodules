@@ -4,3 +4,6 @@
 [submodule "generate_protos"]
 	path = generate_protos
 	url = https://github.com/oianmol/capillary_generate_proto.git
+[submodule "capillaryios"]
+	path = capillaryios
+	url = https://github.com/oianmol/slack_capillary_ios.git

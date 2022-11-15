@@ -68,3 +68,4 @@ fabric.properties
 hs_err_pid*
 
 /build/
+/capillary_kmp.podspec
