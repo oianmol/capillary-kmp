@@ -28,25 +28,38 @@ kotlin {
     android{
         publishLibraryVariants("release")
     }
-    cocoapods {
-        version = "1.0"
-        summary = ""
-        homepage = ""
 
-        framework {
-            baseName = "capillary-ios"
+    ios {
+        compilations["main"].cinterops {
+            val capillaryios by creating {
+                includeDirs.headerFilterOnly("$rootDir/capillaryios/build/libs/$targetName/include")
+                tasks[interopProcessingTaskName].dependsOn(":capillaryios:build${targetName.capitalize()}")
+
+//                // https://youtrack.jetbrains.com/issue/KT-48807#focus=Comments-27-5210791.0-0
+//                compilerOpts("-DNS_FORMAT_ARGUMENT(A)=")
+            }
         }
-
-        ios.deploymentTarget = "11.0"
-
-        //pod("Tink", version = "~> 1.6.1", moduleName = "Tink")
+    }
+    iosSimulatorArm64 {
+        compilations["main"].defaultSourceSet.dependsOn(sourceSets["iosMain"])
+        compilations["test"].defaultSourceSet.dependsOn(sourceSets["iosTest"])
     }
 
-    iosX64()
-    iosArm64()
-    iosSimulatorArm64()
+    listOf(
+        iosX64(),
+        iosSimulatorArm64()
+    ).forEach { target ->
+        target.testRuns.forEach { tr ->
+            tr.deviceId = properties["iosSimulatorName"] as? String ?: "iPhone 14"
+        }
+    }
 
     sourceSets {
+        all {
+            languageSettings {
+                optIn("kotlin.ExperimentalUnsignedTypes")
+            }
+        }
         val commonMain by getting {
             kotlin.srcDirs(
                 projectDir.resolve("build/generated/source/kmp-grpc/commonMain/kotlin").canonicalPath,
@@ -103,17 +116,10 @@ kotlin {
                 implementation("junit:junit:4.13.2")
             }
         }
-        val iosX64Main by getting
-        val iosArm64Main by getting
-        val iosSimulatorArm64Main by getting
-        val iosMain by creating {
+        val iosMain by getting {
             kotlin.srcDirs(
                 projectDir.resolve("build/generated/source/kmp-grpc/iosMain/kotlin").canonicalPath,
             )
-            dependsOn(commonMain)
-            iosX64Main.dependsOn(this)
-            iosArm64Main.dependsOn(this)
-            iosSimulatorArm64Main.dependsOn(this)
         }
     }
 }

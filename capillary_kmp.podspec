@@ -6,14 +6,14 @@ Pod::Spec.new do |spec|
     spec.authors                  = ''
     spec.license                  = ''
     spec.summary                  = ''
-    spec.vendored_frameworks      = 'build/cocoapods/framework/capillary-ios.framework'
+    spec.vendored_frameworks      = 'build/cocoapods/framework/capillary_kmp.framework'
     spec.libraries                = 'c++'
-    spec.ios.deployment_target = '11.0'
+                
                 
                 
     spec.pod_target_xcconfig = {
-        'KOTLIN_PROJECT_PATH' => ':capillary_kmp',
-        'PRODUCT_MODULE_NAME' => 'capillary-ios',
+        'KOTLIN_PROJECT_PATH' => ':',
+        'PRODUCT_MODULE_NAME' => 'capillary_kmp',
     }
                 
     spec.script_phases = [
@@ -28,7 +28,7 @@ Pod::Spec.new do |spec|
                 fi
                 set -ev
                 REPO_ROOT="$PODS_TARGET_SRCROOT"
-                "$REPO_ROOT/../../../../../private/var/folders/3_/c4vlzym95ydgftk4x4w80clc0000gn/T/wrap1loc/gradlew" -p "$REPO_ROOT" $KOTLIN_PROJECT_PATH:syncFramework \
+                "$REPO_ROOT/gradlew" -p "$REPO_ROOT" $KOTLIN_PROJECT_PATH:syncFramework \
                     -Pkotlin.native.cocoapods.platform=$PLATFORM_NAME \
                     -Pkotlin.native.cocoapods.archs="$ARCHS" \
                     -Pkotlin.native.cocoapods.configuration="$CONFIGURATION"
