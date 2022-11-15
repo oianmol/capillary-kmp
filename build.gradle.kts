@@ -34,7 +34,6 @@ kotlin {
             val capillaryios by creating {
                 includeDirs.headerFilterOnly("$rootDir/capillaryios/build/libs/$targetName/include")
                 tasks[interopProcessingTaskName].dependsOn(":capillaryios:build${targetName.capitalize()}")
-
 //                // https://youtrack.jetbrains.com/issue/KT-48807#focus=Comments-27-5210791.0-0
 //                compilerOpts("-DNS_FORMAT_ARGUMENT(A)=")
             }
