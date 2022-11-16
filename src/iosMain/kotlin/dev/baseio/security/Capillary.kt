@@ -1,6 +1,6 @@
 package dev.baseio.security
 
-import swift.capillaryios.*
+import capillaryios.CapillaryIOS
 
 actual object Capillary {
     actual fun initialize() {

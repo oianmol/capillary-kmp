@@ -4,10 +4,11 @@ plugins {
   id("com.android.library")
   kotlin("multiplatform")
   kotlin("native.cocoapods")
+  id("maven-publish")
   id("io.github.timortel.kotlin-multiplatform-grpc-plugin") version "0.2.2"
 }
 
-group = "dev.baseio"
+group = "dev.baseio.slackcrypto"
 version = "1.0"
 
 repositories {
@@ -29,23 +30,34 @@ kotlin {
     publishLibraryVariants("release")
   }
 
-  ios {
-    with(compilations["main"]) {
-      cinterops {
-        val capillaryios by creating {
-          includeDirs.headerFilterOnly("$rootDir/capillaryios/build/libs/$targetName/include")
-          tasks[interopProcessingTaskName].dependsOn(":capillaryios:build${targetName.capitalize()}")
-        }
+  fun org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget.capillaryios() {
+    compilations["main"].cinterops {
+
+      val capillaryios by creating {
+        includeDirs.headerFilterOnly("$rootDir/capillaryios/build/libs/$targetName/include")
+        tasks[interopProcessingTaskName].dependsOn(":capillaryios:build${targetName.capitalize()}")
+//                // https://youtrack.jetbrains.com/issue/KT-48807#focus=Comments-27-5210791.0-0
+//                compilerOpts("-DNS_FORMAT_ARGUMENT(A)=")
       }
     }
   }
-  iosX64 {
-    testRuns.forEach { tr ->
-      tr.deviceId = properties["iosSimulatorName"] as? String ?: "iPhone 14"
-    }
+
+  ios {
+    capillaryios()
   }
+
   iosSimulatorArm64 {
-    testRuns.forEach { tr ->
+    compilations["main"].defaultSourceSet.dependsOn(sourceSets["iosMain"])
+    compilations["test"].defaultSourceSet.dependsOn(sourceSets["iosTest"])
+
+    capillaryios()
+  }
+
+  listOf(
+    iosX64(),
+    iosSimulatorArm64()
+  ).forEach { target ->
+    target.testRuns.forEach { tr ->
       tr.deviceId = properties["iosSimulatorName"] as? String ?: "iPhone 14"
     }
   }
@@ -113,17 +125,18 @@ kotlin {
         implementation("junit:junit:4.13.2")
       }
     }
-    val iosX64Main by getting
-    val iosArm64Main by getting
-    val iosSimulatorArm64Main by getting
-    val iosMain by getting {
+
+    val iosMain by getting{
       kotlin.srcDirs(
         projectDir.resolve("build/generated/source/kmp-grpc/iosMain/kotlin").canonicalPath,
       )
-      dependsOn(commonMain)
-      iosX64Main.dependsOn(this)
-      iosArm64Main.dependsOn(this)
-      iosSimulatorArm64Main.dependsOn(this)
+    }
+    val iosTest by getting
+
+    all {
+      languageSettings {
+        optIn("kotlin.ExperimentalUnsignedTypes")
+      }
     }
   }
 }
@@ -137,9 +150,7 @@ grpcKotlinMultiplatform {
   targetSourcesMap.put(
     OutputTarget.IOS,
     listOf(
-      kotlin.sourceSets.getByName("iosArm64Main"),
-      kotlin.sourceSets.getByName("iosSimulatorArm64Main"),
-      kotlin.sourceSets.getByName("iosX64Main")
+      kotlin.sourceSets.getByName("iosMain"),
     )
   )
   //Specify the folders where your proto files are located, you can list multiple.
