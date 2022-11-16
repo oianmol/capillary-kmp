@@ -35,6 +35,7 @@ kotlin {
         val libraryName = "capillaryios"
         val libraryPath = "$rootDir/$libraryName/build/Build/Products/Release-$platform"
         val frameworksPath = "$libraryPath"
+        val frameworksPathSwiftyRSA = "$libraryPath/SwiftyRSA"
 
         compilations.getByName("main") {
             cinterops.create("capillaryios") {
@@ -62,7 +63,12 @@ kotlin {
             linkerOpts(
                 "-rpath", "$frameworksPath",
                 "-L$libraryPath", "-l$libraryName",
-                "-F$frameworksPath", "-framework",  "Pods_capillaryios"
+                "-F$frameworksPath", "-framework",  "Pods_capillaryios",
+            )
+            linkerOpts(
+                "-rpath", "$frameworksPathSwiftyRSA",
+                "-L$libraryPath", "-l$libraryName",
+                "-F$frameworksPathSwiftyRSA", "-framework",  "SwiftyRSA"
             )
         }
     }
@@ -71,6 +77,7 @@ kotlin {
         val libraryName = "capillaryios"
         val libraryPath = "$rootDir/$libraryName/build/Build/Products/Release-$platform"
         val frameworksPath = "$libraryPath"
+        val frameworksPathSwiftyRSA = "$libraryPath/SwiftyRSA"
 
         compilations.getByName("main") {
             cinterops.create("capillaryios") {
@@ -98,7 +105,12 @@ kotlin {
             linkerOpts(
                 "-rpath", "$frameworksPath",
                 "-L$libraryPath", "-l$libraryName",
-                "-F$frameworksPath", "-framework",  "Pods_capillaryios"
+                "-F$frameworksPath", "-framework",  "Pods_capillaryios",
+            )
+            linkerOpts(
+                "-rpath", "$frameworksPathSwiftyRSA",
+                "-L$libraryPath", "-l$libraryName",
+                "-F$frameworksPathSwiftyRSA", "-framework",  "SwiftyRSA"
             )
         }
     }
@@ -107,6 +119,7 @@ kotlin {
         val libraryName = "capillaryios"
         val libraryPath = "$rootDir/$libraryName/build/Build/Products/Release-$platform"
         val frameworksPath = "$libraryPath"
+        val frameworksPathSwiftyRSA = "$libraryPath/SwiftyRSA"
 
         compilations.getByName("main") {
             cinterops.create("capillaryios") {
@@ -134,7 +147,12 @@ kotlin {
             linkerOpts(
                 "-rpath", "$frameworksPath",
                 "-L$libraryPath", "-l$libraryName",
-                "-F$frameworksPath", "-framework",  "Pods_capillaryios"
+                "-F$frameworksPath", "-framework",  "Pods_capillaryios",
+            )
+            linkerOpts(
+                "-rpath", "$frameworksPathSwiftyRSA",
+                "-L$libraryPath", "-l$libraryName",
+                "-F$frameworksPathSwiftyRSA", "-framework",  "SwiftyRSA"
             )
         }
     }
