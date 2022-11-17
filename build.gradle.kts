@@ -30,50 +30,16 @@ kotlin {
         publishLibraryVariants("release")
     }
 
-    iosArm64 {
-        val platform = "iphoneos"
-        val libraryName = "capillaryios"
-        val libraryPath = "$rootDir/$libraryName/build/Build/Products/Release-$platform"
-        val frameworksPath = "$libraryPath"
-        val frameworksPathSwiftyRSA = "$libraryPath/SwiftyRSA"
-
-        compilations.getByName("main") {
-            cinterops.create("capillaryios") {
-                val interopTask = tasks[interopProcessingTaskName]
-                interopTask.dependsOn(":capillaryios:build${platform.capitalize()}")
-
-                // Path to .def file
-                defFile("$projectDir/src/nativeInterop/cinterop/capillaryios.def")
-                includeDirs(libraryPath)
+    ios {
+        binaries {
+            framework {
+                baseName = "capillaryios"
             }
-        }
-
-        compilations.getByName("test") {
-            cinterops.create("capillaryios") {
-                val interopTask = tasks[interopProcessingTaskName]
-                interopTask.dependsOn(":capillaryios:build${platform.capitalize()}")
-
-                // Path to .def file
-                defFile("$projectDir/src/nativeInterop/cinterop/capillaryios.def")
-                includeDirs.headerFilterOnly(libraryPath)
-            }
-        }
-
-        binaries.all {
-            linkerOpts(
-                "-rpath", "$frameworksPath",
-                "-L$libraryPath", "-l$libraryName",
-                "-F$frameworksPath", "-framework",  "Pods_capillaryios",
-            )
-            linkerOpts(
-                "-rpath", "$frameworksPathSwiftyRSA",
-                "-L$libraryPath", "-l$libraryName",
-                "-F$frameworksPathSwiftyRSA", "-framework",  "SwiftyRSA"
-            )
         }
     }
-    iosSimulatorArm64 {
-        val platform = "iphonesimulator"
+
+    iosArm64 {
+        val platform = "iphoneos"
         val libraryName = "capillaryios"
         val libraryPath = "$rootDir/$libraryName/build/Build/Products/Release-$platform"
         val frameworksPath = "$libraryPath"
@@ -221,17 +187,10 @@ kotlin {
                 implementation("junit:junit:4.13.2")
             }
         }
-        val iosX64Main by getting
-        val iosArm64Main by getting
-        val iosSimulatorArm64Main by getting
-        val iosMain by creating {
+        val iosMain by getting {
             kotlin.srcDirs(
                 projectDir.resolve("build/generated/source/kmp-grpc/iosMain/kotlin").canonicalPath,
             )
-            dependsOn(commonMain)
-            iosX64Main.dependsOn(this)
-            iosArm64Main.dependsOn(this)
-            iosSimulatorArm64Main.dependsOn(this)
         }
     }
 }
@@ -245,9 +204,7 @@ grpcKotlinMultiplatform {
    targetSourcesMap.put(
         OutputTarget.IOS,
         listOf(
-            kotlin.sourceSets.getByName("iosArm64Main"),
-            kotlin.sourceSets.getByName("iosSimulatorArm64Main"),
-            kotlin.sourceSets.getByName("iosX64Main")
+            kotlin.sourceSets.getByName("iosMain"),
         )
     )
     //Specify the folders where your proto files are located, you can list multiple.
