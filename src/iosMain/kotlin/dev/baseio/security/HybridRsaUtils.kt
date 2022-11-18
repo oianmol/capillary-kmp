@@ -1,13 +1,17 @@
 package dev.baseio.security
 
+import dev.baseio.protoextensions.toData
+import dev.baseio.protoextensions.toByteArrayFromNSData
+
 actual object HybridRsaUtils {
   actual fun encrypt(
-    plaintext: ByteArray?,
-    publicKey: PublicKey?,
+    plaintext: ByteArray,
+    publicKey: PublicKey,
     padding: Padding,
-    oaepParams: OAEPParameterSpec?
+    oaepParams: OAEPParameterSpec
   ): ByteArray {
-    TODO("Not yet implemented")
+    val encrypted = interop.capillaryios.CapillaryIOS.encryptWithData(plaintext.toData(), publicKey.publicKey)
+    return encrypted!!.toByteArrayFromNSData()
   }
 
   actual fun decrypt(
@@ -16,7 +20,8 @@ actual object HybridRsaUtils {
     padding: Padding,
     oaepParams: OAEPParameterSpec
   ): ByteArray {
-    TODO("Not yet implemented")
+    val encrypted = interop.capillaryios.CapillaryIOS.decryptWithData(ciphertext.toData(), privateKey.key)
+    return encrypted!!.toByteArrayFromNSData()
   }
 
 }

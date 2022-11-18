@@ -1,4 +1,5 @@
 import io.github.timortel.kotlin_multiplatform_grpc_plugin.GrpcMultiplatformExtension.OutputTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithSimulatorTests
 
 plugins {
     id("com.android.library")
@@ -30,92 +31,19 @@ kotlin {
         publishLibraryVariants("release")
     }
 
-    iosArm64 {
-        val platform = "iphoneos"
-        val libraryName = "capillaryios"
-        val libraryPath = "$rootDir/$libraryName/build/Build/Products/Release-$platform"
-        val frameworksPathSwiftyRSA = "$libraryPath/PackageFrameworks/"
-
-        compilations.getByName("main") {
-            cinterops.create("capillaryios") {
-                val interopTask = tasks[interopProcessingTaskName]
-                interopTask.dependsOn(":capillaryios:build${platform.capitalize()}")
-
-                // Path to .def file
-                defFile("$projectDir/src/nativeInterop/cinterop/capillaryios.def")
-                includeDirs(libraryPath)
+    ios {
+        binaries {
+            framework {
+                baseName = "capillaryios"
+            }
+        }
+        if(this is KotlinNativeTargetWithSimulatorTests){
+            testRuns.forEach { tr ->
+                tr.deviceId = properties["iosSimulatorName"] as? String ?: "iPhone 14"
             }
         }
 
-        compilations.getByName("test") {
-            cinterops.create("capillaryios") {
-                val interopTask = tasks[interopProcessingTaskName]
-                interopTask.dependsOn(":capillaryios:build${platform.capitalize()}")
-
-                // Path to .def file
-                defFile("$projectDir/src/nativeInterop/cinterop/capillaryios.def")
-                includeDirs.headerFilterOnly(libraryPath)
-            }
-        }
-
-        binaries.all {
-            linkerOpts(
-                "-rpath", libraryPath,
-                "-L$libraryPath", "-l$libraryName",
-                "-F$libraryPath", "-framework",  "Pods_capillaryios",
-                "-rpath", frameworksPathSwiftyRSA,
-                "-L$libraryPath", "-l$libraryName",
-                "-F$frameworksPathSwiftyRSA", "-framework",  "SwiftyRSA"
-            )
-        }
-    }
-    iosSimulatorArm64 {
-        val platform = "iphonesimulator"
-        val libraryName = "capillaryios"
-        val libraryPath = "$rootDir/$libraryName/build/Build/Products/Release-$platform"
-        val frameworksPathSwiftyRSA = "$libraryPath/PackageFrameworks/"
-
-        compilations.getByName("main") {
-            cinterops.create("capillaryios") {
-                val interopTask = tasks[interopProcessingTaskName]
-                interopTask.dependsOn(":capillaryios:build${platform.capitalize()}")
-
-                // Path to .def file
-                defFile("$projectDir/src/nativeInterop/cinterop/capillaryios.def")
-                includeDirs(libraryPath)
-            }
-        }
-
-        compilations.getByName("test") {
-            cinterops.create("capillaryios") {
-                val interopTask = tasks[interopProcessingTaskName]
-                interopTask.dependsOn(":capillaryios:build${platform.capitalize()}")
-
-                // Path to .def file
-                defFile("$projectDir/src/nativeInterop/cinterop/capillaryios.def")
-                includeDirs.headerFilterOnly(libraryPath)
-            }
-        }
-
-        binaries.all {
-            linkerOpts(
-                "-rpath", libraryPath,
-                "-L$libraryPath", "-l$libraryName",
-                "-F$libraryPath", "-framework",  "Pods_capillaryios",
-                "-rpath", frameworksPathSwiftyRSA,
-                "-L$libraryPath", "-l$libraryName",
-                "-F$frameworksPathSwiftyRSA", "-framework",  "SwiftyRSA"
-            )
-        }
-        testRuns.forEach { tr ->
-            tr.deviceId = properties["iosSimulatorName"] as? String ?: "iPhone 14"
-        }
-    }
-    iosX64 {
-        testRuns.forEach { tr ->
-            tr.deviceId = properties["iosSimulatorName"] as? String ?: "iPhone 14"
-        }
-        val platform = "iphonesimulator"
+        val platform = if(targetName == "iosArm64") "iphoneos" else "iphonesimulator"
         val libraryName = "capillaryios"
         val libraryPath = "$rootDir/$libraryName/build/Build/Products/Release-$platform"
         val frameworksPathSwiftyRSA = "$libraryPath/PackageFrameworks/"
@@ -153,8 +81,6 @@ kotlin {
             )
         }
     }
-
-
 
     sourceSets {
         all {
@@ -218,17 +144,10 @@ kotlin {
                 implementation("junit:junit:4.13.2")
             }
         }
-        val iosX64Main by getting
-        val iosArm64Main by getting
-        val iosSimulatorArm64Main by getting
-        val iosMain by creating {
+        val iosMain by getting {
             kotlin.srcDirs(
                 projectDir.resolve("build/generated/source/kmp-grpc/iosMain/kotlin").canonicalPath,
             )
-            dependsOn(commonMain)
-            iosX64Main.dependsOn(this)
-            iosArm64Main.dependsOn(this)
-            iosSimulatorArm64Main.dependsOn(this)
         }
     }
 }
@@ -242,9 +161,7 @@ grpcKotlinMultiplatform {
    targetSourcesMap.put(
         OutputTarget.IOS,
         listOf(
-            kotlin.sourceSets.getByName("iosArm64Main"),
-            kotlin.sourceSets.getByName("iosSimulatorArm64Main"),
-            kotlin.sourceSets.getByName("iosX64Main")
+            kotlin.sourceSets.getByName("iosMain"),
         )
     )
     //Specify the folders where your proto files are located, you can list multiple.

@@ -1,3 +1,5 @@
 package dev.baseio.security
 
-expect class PublicKey
+expect class PublicKey {
+  var encoded: ByteArray
+}

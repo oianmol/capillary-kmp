@@ -31,17 +31,17 @@ actual object HybridRsaUtils {
      */
     @Throws(GeneralSecurityException::class)
    actual fun encrypt(
-        plaintext: ByteArray?,
-        publicKey: PublicKey?,
+        plaintext: ByteArray,
+        publicKey: PublicKey,
         padding: Padding,
-        oaepParams: OAEPParameterSpec?
+        oaepParams: OAEPParameterSpec
     ): ByteArray {
         // Initialize RSA encryption cipher.
         val rsaCipher = Cipher.getInstance(padding.transformation)
         if (padding === Padding.OAEP) {
-            rsaCipher.init(Cipher.ENCRYPT_MODE, publicKey?.publicKey, oaepParams?.oaepParamSpec)
+            rsaCipher.init(Cipher.ENCRYPT_MODE, publicKey.publicKey, oaepParams.oaepParamSpec)
         } else {
-            rsaCipher.init(Cipher.ENCRYPT_MODE, publicKey?.publicKey)
+            rsaCipher.init(Cipher.ENCRYPT_MODE, publicKey.publicKey)
         }
 
         // Generate symmetric key and its ciphertext.
