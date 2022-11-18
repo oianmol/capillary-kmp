@@ -15,7 +15,8 @@ internal inline fun ByteArray.toData(offset: Int = 0, length: Int = size - offse
   return NSData.create(pinned.addressOf(offset), length.toULong()) { _, _ -> pinned.unpin() }
 }
 
-internal fun NSData.toByteArray(): ByteArray {
+internal fun NSData.toByteArrayFromNSData(): ByteArray {
+  println(this)
   val size = length.toInt()
   val bytes = ByteArray(size)
 

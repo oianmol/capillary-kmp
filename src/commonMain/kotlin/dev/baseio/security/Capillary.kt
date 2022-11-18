@@ -1,6 +1,11 @@
 package dev.baseio.security
 
-expect object Capillary {
+expect class Capillary(chainId: String) {
   fun initialize()
-  fun getPublicKeyString(): ByteArray?
+  fun privateKey(): PrivateKey
+  fun publicKey(): PublicKey
+  fun encrypt(byteArray: ByteArray, publicKey: PublicKey): ByteArray
+  fun decrypt(byteArray: ByteArray, privateKey: PrivateKey): ByteArray
+  fun getPublicKeyFromBytes(publicKeyBytes: ByteArray): PublicKey
+
 }

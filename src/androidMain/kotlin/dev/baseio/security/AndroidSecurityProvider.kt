@@ -12,11 +12,6 @@ object AndroidSecurityProvider {
 
     fun initialize(context: Context) {
         updateAndroidSecurityProvider(context)
-        try {
-            Capillary.initialize()
-        } catch (e: GeneralSecurityException) {
-            e.printStackTrace()
-        }
     }
 
     private fun updateAndroidSecurityProvider(context: Context) {
