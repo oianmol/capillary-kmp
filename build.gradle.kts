@@ -31,27 +31,17 @@ kotlin {
     publishLibraryVariants("release")
   }
 
-  ios {
 
+  ios {
     val platform = if (targetName == "iosArm64") "iphoneos" else "iphonesimulator"
     val libraryName = "capillaryios"
     val libraryPath = "$rootDir/$libraryName/build/Build/Products/Release-$platform"
-    val frameworksPathSwiftyRSA = "/$libraryPath/PackageFrameworks"
-
-
-    binaries {
-      framework {
-        baseName = "capillaryios"
-      }
-    }
 
     if (this is KotlinNativeTargetWithSimulatorTests) {
       testRuns.forEach { tr ->
         tr.deviceId = properties["iosSimulatorName"] as? String ?: "iPhone 14"
       }
     }
-
-
 
     compilations.getByName("main") {
       cinterops.create("capillaryios") {
@@ -80,10 +70,6 @@ kotlin {
         compilerOpts("-F$libraryPath")
         compilerOpts("-rpath", libraryPath)
         compilerOpts("-framework", "Pods_capillaryios")
-
-        compilerOpts("-F$frameworksPathSwiftyRSA")
-        compilerOpts("-rpath", frameworksPathSwiftyRSA)
-        compilerOpts("-framework", "SwiftyRSA")
       }
     }
 
@@ -94,10 +80,6 @@ kotlin {
       linkerOpts("-F$libraryPath")
       linkerOpts("-rpath", libraryPath)
       linkerOpts("-framework", "Pods_capillaryios")
-
-      linkerOpts("-F$frameworksPathSwiftyRSA")
-      linkerOpts("-rpath", frameworksPathSwiftyRSA)
-      linkerOpts("-framework", "SwiftyRSA")
     }
   }
 
@@ -143,11 +125,12 @@ kotlin {
         projectDir.resolve("build/generated/source/kmp-grpc/jvmMain/kotlin").canonicalPath,
       )
       dependencies {
+        api(project(":generate_protos"))
+
         implementation("io.github.timortel:grpc-multiplatform-lib-android:0.2.2")
         implementation("com.google.crypto.tink:tink-android:1.7.0") {
           exclude("com.google.protobuf", module = "*")
         }
-        api(project(":generate_protos"))
         api("com.google.firebase:firebase-core:21.1.1")
         api("com.google.firebase:firebase-messaging:23.1.0")
         implementation("com.google.crypto.tink:apps-webpush:1.7.0") {

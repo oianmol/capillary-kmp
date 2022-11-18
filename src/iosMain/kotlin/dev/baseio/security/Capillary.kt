@@ -11,6 +11,7 @@ actual class Capillary actual constructor(chainId: String) {
   }
 
   actual fun publicKey(): PublicKey {
+
     val secKey = interop.capillaryios.CapillaryIOS.publicKeyWithChainId(keychainId)
     return PublicKey(secKey!!, interop.capillaryios.CapillaryIOS.bytesFromSecKeyWithSecKey(secKey).toByteArrayFromNSData())
   }
