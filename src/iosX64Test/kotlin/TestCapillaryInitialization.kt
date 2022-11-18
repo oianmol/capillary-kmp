@@ -6,11 +6,13 @@ import kotlin.test.assertNotNull
 class TestCapillaryInitialization {
     @Test
     fun test() {
-        memScoped {
-            Capillary.initialize()
-            val publicKey = Capillary.getPublicKeyString()
+        with(Capillary("a")){
+            initialize()
+            val publicKey = publicKey()
             println(publicKey)
             assertNotNull(publicKey)
         }
+
+
     }
 }
