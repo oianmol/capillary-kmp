@@ -32,21 +32,26 @@ kotlin {
   }
 
   ios {
+
+    val platform = if (targetName == "iosArm64") "iphoneos" else "iphonesimulator"
+    val libraryName = "capillaryios"
+    val libraryPath = "$rootDir/$libraryName/build/Build/Products/Release-$platform"
+    val frameworksPathSwiftyRSA = "/$libraryPath/PackageFrameworks"
+
+
     binaries {
       framework {
         baseName = "capillaryios"
       }
     }
+
     if (this is KotlinNativeTargetWithSimulatorTests) {
       testRuns.forEach { tr ->
         tr.deviceId = properties["iosSimulatorName"] as? String ?: "iPhone 14"
       }
     }
 
-    val platform = if (targetName == "iosArm64") "iphoneos" else "iphonesimulator"
-    val libraryName = "capillaryios"
-    val libraryPath = "$rootDir/$libraryName/build/Build/Products/Release-$platform"
-    val frameworksPathSwiftyRSA = "/$libraryPath/PackageFrameworks"
+
 
     compilations.getByName("main") {
       cinterops.create("capillaryios") {
@@ -67,6 +72,18 @@ kotlin {
         // Path to .def file
         defFile("$projectDir/src/nativeInterop/cinterop/capillaryios.def")
         includeDirs(libraryPath)
+
+
+        compilerOpts("-L$libraryPath")
+        compilerOpts("-rpath", libraryPath)
+
+        compilerOpts("-F$libraryPath")
+        compilerOpts("-rpath", libraryPath)
+        compilerOpts("-framework", "Pods_capillaryios")
+
+        compilerOpts("-F$frameworksPathSwiftyRSA")
+        compilerOpts("-rpath", frameworksPathSwiftyRSA)
+        compilerOpts("-framework", "SwiftyRSA")
       }
     }
 
@@ -77,6 +94,7 @@ kotlin {
       linkerOpts("-F$libraryPath")
       linkerOpts("-rpath", libraryPath)
       linkerOpts("-framework", "Pods_capillaryios")
+
       linkerOpts("-F$frameworksPathSwiftyRSA")
       linkerOpts("-rpath", frameworksPathSwiftyRSA)
       linkerOpts("-framework", "SwiftyRSA")
