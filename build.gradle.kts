@@ -1,5 +1,6 @@
 import io.github.timortel.kotlin_multiplatform_grpc_plugin.GrpcMultiplatformExtension.OutputTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithSimulatorTests
+import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
 plugins {
   id("com.android.library")
@@ -31,7 +32,13 @@ kotlin {
     publishLibraryVariants("release")
   }
 
+  val xcf = XCFramework()
+
   iosArm64{
+    binaries.framework {
+      baseName = "capillary-kmp"
+      xcf.add(this)
+    }
     val platform = if (targetName == "iosArm64") "iphoneos" else "iphonesimulator"
     val libraryName = "capillaryios"
     val libraryPath = "$rootDir/$libraryName/build/Build/Products/Release-$platform"
@@ -82,6 +89,10 @@ kotlin {
     }
   }
   iosX64{
+    binaries.framework {
+      baseName = "capillary-kmp"
+      xcf.add(this)
+    }
     val platform = if (targetName == "iosArm64") "iphoneos" else "iphonesimulator"
     val libraryName = "capillaryios"
     val libraryPath = "$rootDir/$libraryName/build/Build/Products/Release-$platform"
@@ -132,6 +143,10 @@ kotlin {
     }
   }
   iosSimulatorArm64{
+    binaries.framework {
+      baseName = "capillary-kmp"
+      xcf.add(this)
+    }
     val platform = if (targetName == "iosArm64") "iphoneos" else "iphonesimulator"
     val libraryName = "capillaryios"
     val libraryPath = "$rootDir/$libraryName/build/Build/Products/Release-$platform"
