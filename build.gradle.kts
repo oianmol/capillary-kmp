@@ -32,168 +32,65 @@ kotlin {
     publishLibraryVariants("release")
   }
 
-  val xcf = XCFramework()
 
-  iosArm64{
-    binaries.framework {
-      baseName = "capillary-kmp"
-      xcf.add(this)
-    }
-    val platform = if (targetName == "iosArm64") "iphoneos" else "iphonesimulator"
-    val libraryName = "capillaryios"
-    val libraryPath = "$rootDir/$libraryName/build/Build/Products/Release-$platform"
+  listOf(
+    iosX64(),
+    iosArm64(),
+    iosSimulatorArm64()
+  ).forEach {
 
-    if (this is KotlinNativeTargetWithSimulatorTests) {
-      testRuns.forEach { tr ->
-        tr.deviceId = properties["iosSimulatorName"] as? String ?: "iPhone 14"
+    with(it){
+      binaries.framework {
+        baseName = "capillaryios"
       }
-    }
+      val platform = if (targetName == "iosArm64") "iphoneos" else "iphonesimulator"
+      val libraryName = "capillaryios"
+      val libraryPath = "$rootDir/$libraryName/build/Build/Products/Release-$platform"
 
-    compilations.getByName("main") {
-      cinterops.create("capillaryios") {
-        val interopTask = tasks[interopProcessingTaskName]
-        interopTask.dependsOn(":capillaryios:build${platform.capitalize()}")
-
-        // Path to .def file
-        defFile("$projectDir/src/nativeInterop/cinterop/capillaryios.def")
-        includeDirs(libraryPath)
+      if (this is KotlinNativeTargetWithSimulatorTests) {
+        testRuns.forEach { tr ->
+          tr.deviceId = properties["iosSimulatorName"] as? String ?: "iPhone 14"
+        }
       }
-    }
 
-    compilations.getByName("test") {
-      cinterops.create("capillaryios") {
-        val interopTask = tasks[interopProcessingTaskName]
-        interopTask.dependsOn(":capillaryios:build${platform.capitalize()}")
+      compilations.getByName("main") {
+        cinterops.create("capillaryios") {
+          val interopTask = tasks[interopProcessingTaskName]
+          interopTask.dependsOn(":capillaryios:build${platform.capitalize()}")
 
-        // Path to .def file
-        defFile("$projectDir/src/nativeInterop/cinterop/capillaryios.def")
-        includeDirs(libraryPath)
-
-
-        compilerOpts("-L$libraryPath")
-        compilerOpts("-rpath", libraryPath)
-
-        compilerOpts("-F$libraryPath")
-        compilerOpts("-rpath", libraryPath)
-        compilerOpts("-framework", "Pods_capillaryios")
+          // Path to .def file
+          defFile("$projectDir/src/nativeInterop/cinterop/capillaryios.def")
+          includeDirs(libraryPath)
+        }
       }
-    }
 
-    binaries.all {
-      linkerOpts("-L$libraryPath")
-      linkerOpts("-rpath", libraryPath)
+      compilations.getByName("test") {
+        cinterops.create("capillaryios") {
+          val interopTask = tasks[interopProcessingTaskName]
+          interopTask.dependsOn(":capillaryios:build${platform.capitalize()}")
 
-      linkerOpts("-F$libraryPath")
-      linkerOpts("-rpath", libraryPath)
-      linkerOpts("-framework", "Pods_capillaryios")
-    }
-  }
-  iosX64{
-    binaries.framework {
-      baseName = "capillary-kmp"
-      xcf.add(this)
-    }
-    val platform = if (targetName == "iosArm64") "iphoneos" else "iphonesimulator"
-    val libraryName = "capillaryios"
-    val libraryPath = "$rootDir/$libraryName/build/Build/Products/Release-$platform"
+          // Path to .def file
+          defFile("$projectDir/src/nativeInterop/cinterop/capillaryios.def")
+          includeDirs(libraryPath)
 
-    if (this is KotlinNativeTargetWithSimulatorTests) {
-      testRuns.forEach { tr ->
-        tr.deviceId = properties["iosSimulatorName"] as? String ?: "iPhone 14"
+
+          compilerOpts("-L$libraryPath")
+          compilerOpts("-rpath", libraryPath)
+
+          compilerOpts("-F$libraryPath")
+          compilerOpts("-rpath", libraryPath)
+          compilerOpts("-framework", "Pods_capillaryios")
+        }
       }
-    }
 
-    compilations.getByName("main") {
-      cinterops.create("capillaryios") {
-        val interopTask = tasks[interopProcessingTaskName]
-        interopTask.dependsOn(":capillaryios:build${platform.capitalize()}")
+      binaries.all {
+        linkerOpts("-L$libraryPath")
+        linkerOpts("-rpath", libraryPath)
 
-        // Path to .def file
-        defFile("$projectDir/src/nativeInterop/cinterop/capillaryios.def")
-        includeDirs(libraryPath)
+        linkerOpts("-F$libraryPath")
+        linkerOpts("-rpath", libraryPath)
+        linkerOpts("-framework", "Pods_capillaryios")
       }
-    }
-
-    compilations.getByName("test") {
-      cinterops.create("capillaryios") {
-        val interopTask = tasks[interopProcessingTaskName]
-        interopTask.dependsOn(":capillaryios:build${platform.capitalize()}")
-
-        // Path to .def file
-        defFile("$projectDir/src/nativeInterop/cinterop/capillaryios.def")
-        includeDirs(libraryPath)
-
-
-        compilerOpts("-L$libraryPath")
-        compilerOpts("-rpath", libraryPath)
-
-        compilerOpts("-F$libraryPath")
-        compilerOpts("-rpath", libraryPath)
-        compilerOpts("-framework", "Pods_capillaryios")
-      }
-    }
-
-    binaries.all {
-      linkerOpts("-L$libraryPath")
-      linkerOpts("-rpath", libraryPath)
-
-      linkerOpts("-F$libraryPath")
-      linkerOpts("-rpath", libraryPath)
-      linkerOpts("-framework", "Pods_capillaryios")
-    }
-  }
-  iosSimulatorArm64{
-    binaries.framework {
-      baseName = "capillary-kmp"
-      xcf.add(this)
-    }
-    val platform = if (targetName == "iosArm64") "iphoneos" else "iphonesimulator"
-    val libraryName = "capillaryios"
-    val libraryPath = "$rootDir/$libraryName/build/Build/Products/Release-$platform"
-
-    if (this is KotlinNativeTargetWithSimulatorTests) {
-      testRuns.forEach { tr ->
-        tr.deviceId = properties["iosSimulatorName"] as? String ?: "iPhone 14"
-      }
-    }
-
-    compilations.getByName("main") {
-      cinterops.create("capillaryios") {
-        val interopTask = tasks[interopProcessingTaskName]
-        interopTask.dependsOn(":capillaryios:build${platform.capitalize()}")
-
-        // Path to .def file
-        defFile("$projectDir/src/nativeInterop/cinterop/capillaryios.def")
-        includeDirs(libraryPath)
-      }
-    }
-
-    compilations.getByName("test") {
-      cinterops.create("capillaryios") {
-        val interopTask = tasks[interopProcessingTaskName]
-        interopTask.dependsOn(":capillaryios:build${platform.capitalize()}")
-
-        // Path to .def file
-        defFile("$projectDir/src/nativeInterop/cinterop/capillaryios.def")
-        includeDirs(libraryPath)
-
-
-        compilerOpts("-L$libraryPath")
-        compilerOpts("-rpath", libraryPath)
-
-        compilerOpts("-F$libraryPath")
-        compilerOpts("-rpath", libraryPath)
-        compilerOpts("-framework", "Pods_capillaryios")
-      }
-    }
-
-    binaries.all {
-      linkerOpts("-L$libraryPath")
-      linkerOpts("-rpath", libraryPath)
-
-      linkerOpts("-F$libraryPath")
-      linkerOpts("-rpath", libraryPath)
-      linkerOpts("-framework", "Pods_capillaryios")
     }
   }
 
