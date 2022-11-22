@@ -42,6 +42,7 @@ kotlin {
     with(it){
       binaries.framework {
         baseName = "capillaryios"
+        embedBitcode("marker")
       }
       val platform = if (targetName == "iosArm64") "iphoneos" else "iphonesimulator"
       val libraryName = "capillaryios"
