@@ -41,9 +41,7 @@ kotlin {
     }
 
     pod("capillaryslack",){
-      source = git("https://github.com/oianmol/slack_capillary_ios.git"){
-        this.branch = "master"
-      }
+      source = path(rootProject.projectDir.absolutePath+"/capillaryios/")
     }
   }
 
