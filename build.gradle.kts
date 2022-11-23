@@ -37,10 +37,15 @@ kotlin {
     homepage = "https://github.com/oianmol"
     ios.deploymentTarget = "14.1"
     framework {
-      baseName = "capillaryios"
+      baseName = "capillaryslack"
     }
-    specRepos{
+    specRepos {
       url("https://github.com/oianmol/slack_capillary_ios.git")
+    }
+    pod("capillaryslack",){
+      source = git("https://github.com/oianmol/slack_capillary_ios.git"){
+        this.branch = "master"
+      }
     }
   }
 
