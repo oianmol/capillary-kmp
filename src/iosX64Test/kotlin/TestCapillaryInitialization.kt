@@ -9,7 +9,7 @@ class TestCapillaryInitialization {
         memScoped {
             with(Capillary("anmol")){
                 initialize()
-                val publicKey = publicKey()
+                val publicKey = publicKeyLogs()
                 println(publicKey)
                 assertNotNull(publicKey)
             }
