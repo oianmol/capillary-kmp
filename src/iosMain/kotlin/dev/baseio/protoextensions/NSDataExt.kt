@@ -16,7 +16,6 @@ internal inline fun ByteArray.toData(offset: Int = 0, length: Int = size - offse
 }
 
 internal fun NSData.toByteArrayFromNSData(): ByteArray {
-  println(this)
   val size = length.toInt()
   val bytes = ByteArray(size)
 
