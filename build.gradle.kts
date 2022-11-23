@@ -32,76 +32,24 @@ kotlin {
     publishLibraryVariants("release")
   }
 
-
-  listOf(
-    iosX64(),
-    iosArm64(),
-    iosSimulatorArm64()
-  ).forEach {
-
-    with(it){
-      binaries.framework {
-        baseName = "capillaryios"
-        embedBitcode("marker")
-      }
-      val platform = if (targetName == "iosArm64") "iphoneos" else "iphonesimulator"
-      val libraryName = "capillaryios"
-      val libraryPath = "$rootDir/$libraryName/build/Build/Products/Release-$platform"
-
-      if (this is KotlinNativeTargetWithSimulatorTests) {
-        testRuns.forEach { tr ->
-          tr.deviceId = properties["iosSimulatorName"] as? String ?: "iPhone 14"
-        }
-      }
-
-      compilations.getByName("main") {
-        cinterops.create("capillaryios") {
-          val interopTask = tasks[interopProcessingTaskName]
-          interopTask.dependsOn(":capillaryios:build${platform.capitalize()}")
-
-          // Path to .def file
-          defFile("$projectDir/src/nativeInterop/cinterop/capillaryios.def")
-          includeDirs(libraryPath)
-        }
-      }
-
-      compilations.getByName("test") {
-        cinterops.create("capillaryios") {
-          val interopTask = tasks[interopProcessingTaskName]
-          interopTask.dependsOn(":capillaryios:build${platform.capitalize()}")
-
-          // Path to .def file
-          defFile("$projectDir/src/nativeInterop/cinterop/capillaryios.def")
-          includeDirs(libraryPath)
-
-
-          compilerOpts("-L$libraryPath")
-          compilerOpts("-rpath", libraryPath)
-
-          compilerOpts("-F$libraryPath")
-          compilerOpts("-rpath", libraryPath)
-          compilerOpts("-framework", "Pods_capillaryios")
-        }
-      }
-
-      binaries.all {
-        linkerOpts("-L$libraryPath")
-        linkerOpts("-rpath", libraryPath)
-
-        linkerOpts("-F$libraryPath")
-        linkerOpts("-rpath", libraryPath)
-        linkerOpts("-framework", "Pods_capillaryios")
-      }
+  cocoapods {
+    summary = "Capillary encryption Library"
+    homepage = "https://github.com/oianmol"
+    ios.deploymentTarget = "14.1"
+    framework {
+      baseName = "capillaryios"
+    }
+    specRepos{
+      url("https://github.com/oianmol/slack_capillary_ios.git")
     }
   }
 
+  iosX64()
+  iosArm64()
+  iosSimulatorArm64()
+
 
   sourceSets {
-    all {
-      languageSettings {
-        optIn("kotlin.ExperimentalUnsignedTypes")
-      }
-    }
     val commonMain by getting {
       kotlin.srcDirs(
         projectDir.resolve("build/generated/source/kmp-grpc/commonMain/kotlin").canonicalPath,
