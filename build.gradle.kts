@@ -39,9 +39,7 @@ kotlin {
     framework {
       baseName = "capillaryslack"
     }
-    specRepos {
-      url("https://github.com/oianmol/slack_capillary_ios.git")
-    }
+
     pod("capillaryslack",){
       source = git("https://github.com/oianmol/slack_capillary_ios.git"){
         this.branch = "master"
