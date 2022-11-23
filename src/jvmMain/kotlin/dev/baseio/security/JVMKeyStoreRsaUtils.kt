@@ -116,5 +116,4 @@ object JVMKeyStoreRsaUtils {
             X509EncodedKeySpec(publicKeyBytes)
         ))
     }
-
 }
