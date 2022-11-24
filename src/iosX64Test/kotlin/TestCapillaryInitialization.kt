@@ -8,8 +8,7 @@ class TestCapillaryInitialization {
   @Test
   fun test() {
     memScoped {
-      with(CapillaryInstances.getInstance("anmol")) {
-        initialize(isTest = true)
+      with(CapillaryInstances.getInstance("anmol", isTest = true)) {
         val publicKey = publicKey()
         assertNotNull(publicKey)
         val privateKey = privateKey()
