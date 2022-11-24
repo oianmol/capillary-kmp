@@ -7,7 +7,7 @@ import dev.baseio.protoextensions.toData
 actual fun ByteArray.toPrivateKey(): PrivateKey {
   val secKey = cocoapods.capillaryslack.CapillaryIOS.privateKeyFromBytesWithData(this.toData())
   return PrivateKey(
-    secKey!!,
+    cocoapods.capillaryslack.CapillaryIOS.bytesFromPrivateKeyWithSecKey(secKey).toByteArrayFromNSData()
   )
 }
 

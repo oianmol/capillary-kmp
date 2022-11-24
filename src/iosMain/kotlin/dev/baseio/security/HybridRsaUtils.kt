@@ -20,7 +20,7 @@ actual object HybridRsaUtils {
     padding: Padding,
     oaepParams: OAEPParameterSpec
   ): ByteArray {
-    val encrypted = cocoapods.capillaryslack.CapillaryIOS.decryptWithData(ciphertext.toData(), privateKey.key)
+    val encrypted = cocoapods.capillaryslack.CapillaryIOS.decryptWithData(ciphertext.toData(), privateKey.encodedBytes.toData())
     return encrypted!!.toByteArrayFromNSData()
   }
 
