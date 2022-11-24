@@ -9,7 +9,7 @@ object CapillaryInstances {
     }
     // TODO make this synchronized ?
     return Capillary(chainId).also {
-      it.initialize()
+      it.initialize(isTest = false)
       instances[chainId] = it
     }
   }
