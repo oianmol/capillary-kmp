@@ -1,7 +1,7 @@
 package dev.baseio.security
 
 expect class Capillary(chainId: String) {
-  fun initialize()
+  fun initialize(isTest: Boolean = false)
   fun privateKey(): PrivateKey
   fun publicKey(): PublicKey
   fun encrypt(byteArray: ByteArray, publicKey: PublicKey): ByteArray

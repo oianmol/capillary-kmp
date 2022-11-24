@@ -12,9 +12,7 @@ actual fun ByteArray.toPrivateKey(): PrivateKey {
 }
 
 actual fun ByteArray.toPublicKey(): PublicKey {
-  val secKey = cocoapods.capillaryslack.CapillaryIOS.publicKeyFromBytesWithData(this.toData())
   return PublicKey(
-    secKey!!,
-    cocoapods.capillaryslack.CapillaryIOS.bytesFromSecKeyWithSecKey(secKey).toByteArrayFromNSData()
+    cocoapods.capillaryslack.CapillaryIOS.publicKeyFromBytesWithData(this.toData())!!.toByteArrayFromNSData()
   )
 }

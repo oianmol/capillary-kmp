@@ -6,7 +6,7 @@ import com.google.crypto.tink.signature.SignatureConfig
 actual class Capillary actual constructor(private val chainId: String) {
   val keychainId = "rsa_ecdsa_jvm$chainId"
 
-  actual fun initialize() {
+  actual fun initialize(isTest: Boolean) {
     com.google.crypto.tink.Config.register(SignatureConfig.LATEST);
     AeadConfig.register()
     JVMKeyStoreRsaUtils.generateKeyPair(keychainId)

@@ -10,7 +10,7 @@ actual class Capillary actual constructor(chainId: String) {
   var keyStore: KeyStore = KeyStore.getInstance(AndroidSecurityProvider.KEYSTORE_ANDROID)
   private val keychainId = "rsa_ecdsa_android$chainId"
 
-  actual fun initialize() {
+  actual fun initialize(isTest: Boolean) {
     com.google.crypto.tink.Config.register(SignatureConfig.LATEST)
     AeadConfig.register()
 

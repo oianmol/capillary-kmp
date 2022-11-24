@@ -6,16 +6,12 @@ import dev.baseio.protoextensions.toData
 actual class Capillary actual constructor(chainId: String) {
   private val keychainId = "rsa_ios$chainId"
 
-  actual fun initialize() {
-    cocoapods.capillaryslack.CapillaryIOS.initNowWithChainId(keychainId)
+  actual fun initialize(isTest: Boolean) {
+    cocoapods.capillaryslack.CapillaryIOS.initNowWithChainId(keychainId,isTest)
   }
 
   actual fun publicKey(): PublicKey {
-    val secKey = cocoapods.capillaryslack.CapillaryIOS.publicKeyWithChainId(keychainId)
-    secKey?.let {
-      return PublicKey(secKey, cocoapods.capillaryslack.CapillaryIOS.bytesFromSecKeyWithSecKey(secKey).toByteArrayFromNSData())
-    }
-    throw Exception("secKey is null!")
+    return PublicKey(encodedBytes = cocoapods.capillaryslack.CapillaryIOS.publicKeyWithChainId(keychainId)!!.toByteArrayFromNSData())
   }
 
   actual fun privateKey(): PrivateKey {
@@ -24,7 +20,7 @@ actual class Capillary actual constructor(chainId: String) {
   }
 
   actual fun encrypt(byteArray: ByteArray, publicKey: PublicKey): ByteArray {
-    val encrypted = cocoapods.capillaryslack.CapillaryIOS.encryptWithData(byteArray.toData(), publicKey.publicKey)
+    val encrypted = cocoapods.capillaryslack.CapillaryIOS.encryptWithData(byteArray.toData(), publicKey.encoded.toData())
     return encrypted!!.toByteArrayFromNSData()
   }
 
@@ -34,8 +30,7 @@ actual class Capillary actual constructor(chainId: String) {
   }
 
   actual fun getPublicKeyFromBytes(publicKeyBytes: ByteArray): PublicKey {
-    val secKey = cocoapods.capillaryslack.CapillaryIOS.publicKeyFromBytesWithData(publicKeyBytes.toData())
-    return PublicKey(secKey!!, cocoapods.capillaryslack.CapillaryIOS.bytesFromSecKeyWithSecKey(secKey).toByteArrayFromNSData())
+    return PublicKey(cocoapods.capillaryslack.CapillaryIOS.publicKeyFromBytesWithData(publicKeyBytes.toData())!!.toByteArrayFromNSData())
   }
 
 }

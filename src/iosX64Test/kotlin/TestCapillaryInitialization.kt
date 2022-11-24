@@ -4,17 +4,20 @@ import kotlin.test.Test
 import kotlin.test.assertNotNull
 
 class TestCapillaryInitialization {
-    @Test
-    fun test() {
-        memScoped {
-            with(Capillary("anmol")){
-                initialize()
-                val publicKey = publicKey()
-                val privateKey = privateKey()
-                assert(decrypt(encrypt("Anmol".encodeToByteArray(),publicKey),privateKey).contentEquals("Anmol".encodeToByteArray()))
-                assertNotNull(publicKey)
-            }
-        }
+  @Test
+  fun test() {
+    memScoped {
+      with(Capillary("anmol")) {
+        initialize(isTest = true)
+        val publicKey = publicKey()
+        assertNotNull(publicKey)
+        val privateKey = privateKey()
 
+        val encrypted = encrypt("Anmol".encodeToByteArray(), publicKey)
+        val decrypted = decrypt(encrypted, privateKey)
+        assert(decrypted.contentEquals("Anmol".encodeToByteArray()))
+      }
     }
+
+  }
 }
