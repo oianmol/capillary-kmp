@@ -1,4 +1,5 @@
 import dev.baseio.security.Capillary
+import dev.baseio.security.CapillaryInstances
 import kotlinx.cinterop.memScoped
 import kotlin.test.Test
 import kotlin.test.assertNotNull
@@ -7,7 +8,7 @@ class TestCapillaryInitialization {
   @Test
   fun test() {
     memScoped {
-      with(Capillary("anmol")) {
+      with(CapillaryInstances.getInstance("anmol")) {
         initialize(isTest = true)
         val publicKey = publicKey()
         assertNotNull(publicKey)

@@ -3,7 +3,7 @@ package dev.baseio.security
 import com.google.crypto.tink.aead.AeadConfig
 import com.google.crypto.tink.signature.SignatureConfig
 
-actual class Capillary actual constructor(private val chainId: String) {
+actual class Capillary actual constructor(chainId: String) {
   val keychainId = "rsa_ecdsa_jvm$chainId"
 
   actual fun initialize(isTest: Boolean) {
