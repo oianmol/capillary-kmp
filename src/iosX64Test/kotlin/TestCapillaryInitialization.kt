@@ -12,7 +12,7 @@ class TestCapillaryInitialization {
         val publicKey = publicKey()
         assertNotNull(publicKey)
         val privateKey = privateKey()
-
+        assertNotNull(privateKey)
         val encrypted = encrypt("Anmol".encodeToByteArray(), publicKey)
         val decrypted = decrypt(encrypted, privateKey)
         assert(decrypted.contentEquals("Anmol".encodeToByteArray()))

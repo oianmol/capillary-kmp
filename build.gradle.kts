@@ -38,6 +38,7 @@ kotlin {
     ios.deploymentTarget = "14.1"
     framework {
       baseName = "capillaryslack"
+      isStatic = true
     }
 
     pod("capillaryslack",){
