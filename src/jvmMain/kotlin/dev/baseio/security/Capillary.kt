@@ -41,4 +41,8 @@ actual class Capillary actual constructor(chainId: String) {
   actual fun getPublicKeyFromBytes(publicKeyBytes: ByteArray): PublicKey {
     return JVMKeyStoreRsaUtils.getPublicKeyFromBytes(publicKeyBytes)
   }
+
+  actual fun privateKeyFromBytes(bytes: ByteArray): PrivateKey {
+    return bytes.toPrivateKey()
+  }
 }

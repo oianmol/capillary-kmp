@@ -51,4 +51,8 @@ actual class Capillary actual constructor(chainId: String) {
     return AndroidKeyStoreRsaUtils.getPublicKeyFromBytes(publicKeyBytes)
   }
 
+  actual fun privateKeyFromBytes(bytes: ByteArray): PrivateKey {
+    TODO("Not yet implemented")
+  }
+
 }

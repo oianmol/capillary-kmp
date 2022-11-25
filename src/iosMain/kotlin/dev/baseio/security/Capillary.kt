@@ -30,7 +30,8 @@ actual class Capillary actual constructor(chainId: String) {
   }
 
   actual fun decrypt(byteArray: ByteArray, privateKey: PrivateKey): ByteArray {
-    val encrypted = cocoapods.capillaryslack.CapillaryIOS.decryptWithData(byteArray.toData(), privateKey.encodedBytes.toData())
+    val encrypted =
+      cocoapods.capillaryslack.CapillaryIOS.decryptWithData(byteArray.toData(), privateKey.encodedBytes.toData())
     return encrypted!!.toByteArrayFromNSData()
   }
 
@@ -39,6 +40,10 @@ actual class Capillary actual constructor(chainId: String) {
       cocoapods.capillaryslack.CapillaryIOS.publicKeyFromBytesWithData(publicKeyBytes.toData())!!
         .toByteArrayFromNSData()
     )
+  }
+
+  actual fun privateKeyFromBytes(bytes: ByteArray): PrivateKey {
+    return bytes.toPrivateKey()
   }
 
 }
