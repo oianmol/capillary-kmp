@@ -1,7 +1,5 @@
 package dev.baseio.security
 
-import com.google.crypto.tink.aead.AeadConfig
-import com.google.crypto.tink.signature.SignatureConfig
 import java.io.IOException
 import java.security.GeneralSecurityException
 import java.security.KeyStore
@@ -11,9 +9,6 @@ actual class Capillary actual constructor(chainId: String) {
   private val keychainId = "rsa_ecdsa_android$chainId"
 
   actual fun initialize(isTest: Boolean) {
-    com.google.crypto.tink.Config.register(SignatureConfig.LATEST)
-    AeadConfig.register()
-
     try {
       keyStore.load(null)
       AndroidKeyStoreRsaUtils.generateKeyPair(keychainId, keyStore)
@@ -31,28 +26,20 @@ actual class Capillary actual constructor(chainId: String) {
   }
 
   actual fun encrypt(byteArray: ByteArray, publicKey: PublicKey): ByteArray {
-    return HybridRsaUtils.encrypt(
+    return CapillaryEncryption.encrypt(
       byteArray,
       publicKey,
-      Padding.OAEP,
-      OAEPParameterSpec()
     )
   }
 
   actual fun decrypt(byteArray: ByteArray, privateKey: PrivateKey): ByteArray {
-    return HybridRsaUtils.decrypt(
+    return CapillaryEncryption.decrypt(
       byteArray, privateKey,
-      Padding.OAEP,
-      OAEPParameterSpec()
     )
   }
 
   actual fun getPublicKeyFromBytes(publicKeyBytes: ByteArray): PublicKey {
     return AndroidKeyStoreRsaUtils.getPublicKeyFromBytes(publicKeyBytes)
-  }
-
-  actual fun privateKeyFromBytes(bytes: ByteArray): PrivateKey {
-    TODO("Not yet implemented")
   }
 
 }

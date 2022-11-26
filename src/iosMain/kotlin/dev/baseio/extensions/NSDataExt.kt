@@ -1,4 +1,4 @@
-package dev.baseio.protoextensions
+package dev.baseio.extensions
 
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.pin

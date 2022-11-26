@@ -1,19 +1,18 @@
 package dev.baseio.security
 
-expect object HybridRsaUtils {
+const val TRANSFORMATION_ASYMMETRIC = "RSA/None/PKCS1Padding"
+val KEY_SIZE: Int = 2048
+
+expect object CapillaryEncryption {
 
   actual fun encrypt(
     plaintext: ByteArray,
     publicKey: PublicKey,
-    padding: Padding,
-    oaepParams: OAEPParameterSpec
   ): ByteArray
 
   actual fun decrypt(
     ciphertext: ByteArray,
     privateKey: PrivateKey,
-    padding: Padding,
-    oaepParams: OAEPParameterSpec
   ): ByteArray
 
 }

@@ -18,7 +18,6 @@ import java.security.spec.X509EncodedKeySpec
 object AndroidKeyStoreRsaUtils {
     private const val AUTH_KEY_ALIAS_SUFFIX = "_capillary_rsa"
     private const val KEYSTORE_ANDROID = "AndroidKeyStore"
-    private const val KEY_SIZE = 2048
 
     fun generateKeyPair(keychainId: String, keyStore: KeyStore) {
         val keyAlias = toKeyAlias(keychainId)

@@ -1,7 +1,7 @@
 package dev.baseio.security
 
-import dev.baseio.protoextensions.toByteArrayFromNSData
-import dev.baseio.protoextensions.toData
+import dev.baseio.extensions.toByteArrayFromNSData
+import dev.baseio.extensions.toData
 
 
 actual fun ByteArray.toPrivateKey(): PrivateKey {

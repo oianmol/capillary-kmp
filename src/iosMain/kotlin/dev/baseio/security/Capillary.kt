@@ -1,7 +1,7 @@
 package dev.baseio.security
 
-import dev.baseio.protoextensions.toByteArrayFromNSData
-import dev.baseio.protoextensions.toData
+import dev.baseio.extensions.toByteArrayFromNSData
+import dev.baseio.extensions.toData
 
 actual class Capillary actual constructor(chainId: String) {
   private val keychainId = "rsa_ios$chainId"
@@ -41,9 +41,4 @@ actual class Capillary actual constructor(chainId: String) {
         .toByteArrayFromNSData()
     )
   }
-
-  actual fun privateKeyFromBytes(bytes: ByteArray): PrivateKey {
-    return bytes.toPrivateKey()
-  }
-
 }
