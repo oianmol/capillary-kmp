@@ -77,6 +77,9 @@ kotlin {
     val androidMain by getting {
       dependencies {
         implementation("joda-time:joda-time:2.9.9")
+        api("com.google.firebase:firebase-core:21.1.1")
+        api("com.google.firebase:firebase-messaging:23.1.0")
+
       }
     }
     val androidTest by getting {
