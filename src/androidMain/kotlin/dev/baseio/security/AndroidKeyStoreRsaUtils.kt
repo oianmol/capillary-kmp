@@ -6,7 +6,6 @@ import java.security.KeyFactory
 import java.security.KeyPairGenerator
 import java.security.KeyStore
 import java.security.spec.AlgorithmParameterSpec
-import java.security.spec.RSAKeyGenParameterSpec
 import java.security.spec.X509EncodedKeySpec
 
 /**
@@ -24,19 +23,22 @@ object AndroidKeyStoreRsaUtils {
         if (keyStore.containsAlias(keyAlias)) {
             return
         }
-        val rsaSpec = RSAKeyGenParameterSpec(KEY_SIZE, RSAKeyGenParameterSpec.F4)
         val spec: AlgorithmParameterSpec
-        val specBuilder: KeyGenParameterSpec.Builder =
-            KeyGenParameterSpec.Builder(keyAlias, KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT)
-                .setAlgorithmParameterSpec(rsaSpec)
-                .setDigests(KeyProperties.DIGEST_SHA256)
-                .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_RSA_OAEP)
+        val specBuilder: KeyGenParameterSpec.Builder = KeyGenParameterSpec.Builder(
+            keyAlias,
+            KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
+        )
+            .setBlockModes(KeyProperties.BLOCK_MODE_ECB)
+            .setDigests(KeyProperties.DIGEST_SHA256)
+            .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_RSA_PKCS1)
+            .setKeySize(2048)
+
         spec = specBuilder.build()
 
 
         val keyPairGenerator = KeyPairGenerator.getInstance("RSA",KEYSTORE_ANDROID)
         keyPairGenerator.initialize(spec)
-        val keyPair = keyPairGenerator.generateKeyPair()
+        keyPairGenerator.generateKeyPair()
 
     }
 

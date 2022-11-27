@@ -1,7 +1,7 @@
 package dev.baseio.security
 
 const val TRANSFORMATION_ASYMMETRIC = "RSA/None/PKCS1Padding"
-val KEY_SIZE: Int = 2048
+const val KEY_SIZE: Int = 2048
 
 expect object CapillaryEncryption {
 

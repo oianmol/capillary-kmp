@@ -14,10 +14,9 @@ object JVMKeyStoreRsaUtils {
         if (File(pubicKeyFile(chainId)).exists()) {
             return
         }
-        val rsaSpec = RSAKeyGenParameterSpec(KEY_SIZE, RSAKeyGenParameterSpec.F4)
 
         val keyPairGenerator = KeyPairGenerator.getInstance("RSA")
-        keyPairGenerator.initialize(rsaSpec)
+        keyPairGenerator.initialize(KEY_SIZE)
         val keyPair = keyPairGenerator.generateKeyPair()
 
         val rsaPublicKey: RSAPublicKey = keyPair.public as RSAPublicKey
