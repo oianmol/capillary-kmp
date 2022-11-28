@@ -1,101 +1,51 @@
 package dev.baseio.security
 
-import android.util.Base64
-import android.util.Log
+import com.google.crypto.tink.*
 import java.io.ByteArrayOutputStream
+import java.io.IOException
+import java.security.GeneralSecurityException
 import java.security.Key
 import javax.crypto.Cipher
 
 class CipherWrapper(private val transformation: String) {
-    private val KEY_SIZE: Int = 2048
+    private val SYMMETRIC_KEY_TEMPLATE = KeyTemplates.get("AES128_GCM")
+    private val emptyEad = ByteArray(0)
 
-    fun encrypt(message: String, key: Key?): String? {
-        try {
-            val cipher: Cipher = Cipher.getInstance(transformation)
-            cipher.init(Cipher.ENCRYPT_MODE, key)
-
-            val messageData = message.toByteArray(Charsets.UTF_8)
-            var limit: Int = (key?.encoded?.size)?.minus(62) ?: 128
-
-            var position = 0
-            val byteArrayOutputStream = ByteArrayOutputStream()
-
-            while (position < messageData.size) {
-                if (messageData.size - position < limit)
-                    limit = messageData.size - position
-                val data = cipher.doFinal(messageData, position, limit)
-                byteArrayOutputStream.write(data)
-                position += limit
-            }
-            val enc = Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.NO_WRAP)
-            byteArrayOutputStream.flush()
-            byteArrayOutputStream.close()
-            return enc
-        } catch (e: Exception) {
-            Log.e("CharWrapper", e.localizedMessage?: "StringEncrypt")
-            return null
-        }
-    }
-
-    fun encrypt(messageData: ByteArray, key: Key?): ByteArray {
+    fun encrypt(messageData: ByteArray, key: Key?): Pair<ByteArray, ByteArray> {
         val cipher: Cipher = Cipher.getInstance(transformation)
         cipher.init(Cipher.ENCRYPT_MODE, key)
 
-        var limit: Int = (key?.encoded?.size)?.minus(62) ?: 128
-        var position = 0
-        val byteArrayOutputStream = ByteArrayOutputStream()
-
-        while (position < messageData.size) {
-            if (messageData.size - position < limit)
-                limit = messageData.size - position
-            val data = cipher.doFinal(messageData, position, limit)
-            byteArrayOutputStream.write(data)
-            position += limit
+        val symmetricKeyHandle = KeysetHandle.generateNew(SYMMETRIC_KEY_TEMPLATE)
+        val symmetricKeyOutputStream = ByteArrayOutputStream()
+        try {
+            CleartextKeysetHandle.write(
+                symmetricKeyHandle, BinaryKeysetWriter.withOutputStream(symmetricKeyOutputStream)
+            )
+        } catch (e: IOException) {
+            throw GeneralSecurityException("hybrid rsa encryption failed: ", e)
         }
-        val enc = byteArrayOutputStream.toByteArray()
-        byteArrayOutputStream.flush()
-        byteArrayOutputStream.close()
-        return enc
+        val symmetricKeyBytes = symmetricKeyOutputStream.toByteArray()
+        val symmetricKeyCiphertext = cipher.doFinal(symmetricKeyBytes)
+
+        // Generate payload ciphertext.
+        val aead = symmetricKeyHandle.getPrimitive(Aead::class.java)
+        val payloadCiphertext = aead.encrypt(messageData, emptyEad)
+        return Pair(symmetricKeyCiphertext, payloadCiphertext)
     }
 
-    fun decrypt(message: String, key: Key?): String? {
-        val cipher: Cipher = Cipher.getInstance(transformation)
-        cipher.init(Cipher.DECRYPT_MODE, key)
-        val encryptedData = Base64.decode(message.toByteArray(Charsets.UTF_8), Base64.NO_WRAP)
-
-        var limit: Int = KEY_SIZE / 8
-        var position = 0
-        val byteArrayOutputStream = ByteArrayOutputStream()
-        while (position < encryptedData.size) {
-            if (encryptedData.size - position < limit)
-                limit = encryptedData.size - position
-            val data = cipher.doFinal(encryptedData, position, limit)
-            byteArrayOutputStream.write(data)
-            position += limit
+    fun decrypt(symmetricKeyCiphertext: ByteArray, payloadCiphertext: ByteArray, key: Key?): ByteArray {
+        val rsaCipher = Cipher.getInstance(transformation)
+        rsaCipher.init(Cipher.DECRYPT_MODE, key)
+        // Retrieve symmetric key.
+        val symmetricKeyBytes = rsaCipher.doFinal(symmetricKeyCiphertext)
+        val symmetricKeyHandle: KeysetHandle = try {
+            CleartextKeysetHandle.read(BinaryKeysetReader.withBytes(symmetricKeyBytes))
+        } catch (e: IOException) {
+            throw GeneralSecurityException("hybrid rsa decryption failed: ", e)
         }
-        val dec = byteArrayOutputStream.toString(Charsets.UTF_8.name())
-        byteArrayOutputStream.flush()
-        byteArrayOutputStream.close()
-        return dec
-    }
-
-    fun decrypt(data: ByteArray, key: Key?): ByteArray {
-        val cipher: Cipher = Cipher.getInstance(transformation)
-        cipher.init(Cipher.DECRYPT_MODE, key)
-
-        var limit: Int = KEY_SIZE / 8
-        var position = 0
-        val byteArrayOutputStream = ByteArrayOutputStream()
-        while (position < data.size) {
-            if (data.size - position < limit)
-                limit = data.size - position
-            val data = cipher.doFinal(data, position, limit)
-            byteArrayOutputStream.write(data)
-            position += limit
-        }
-        val dec = byteArrayOutputStream.toByteArray()
-        byteArrayOutputStream.flush()
-        byteArrayOutputStream.close()
-        return dec
+        // Retrieve and return plaintext.
+        return symmetricKeyHandle
+            .getPrimitive(Aead::class.java)
+            .decrypt(payloadCiphertext, emptyEad)
     }
 }

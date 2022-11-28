@@ -7,7 +7,6 @@ actual class Capillary actual constructor(chainId: String) {
   val keychainId = "rsa_ecdsa_jvm$chainId"
 
   actual fun initialize(isTest: Boolean) {
-    Security.addProvider(BouncyCastleProvider())
     JVMKeyStoreRsaUtils.generateKeyPair(keychainId)
   }
 

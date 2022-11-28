@@ -1,17 +1,19 @@
 package dev.baseio.security
 
-const val TRANSFORMATION_ASYMMETRIC = "RSA/None/PKCS1Padding"
+const val TRANSFORMATION_ASYMMETRIC = "RSA/ECB/PKCS1Padding"
 const val KEY_SIZE: Int = 2048
+
+typealias EncryptedData = Pair<ByteArray,ByteArray>
 
 expect object CapillaryEncryption {
 
   actual fun encrypt(
     plaintext: ByteArray,
     publicKey: PublicKey,
-  ): ByteArray
+  ): EncryptedData
 
   actual fun decrypt(
-    ciphertext: ByteArray,
+    encryptedData: EncryptedData,
     privateKey: PrivateKey,
   ): ByteArray
 

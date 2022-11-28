@@ -70,12 +70,18 @@ kotlin {
     }
     val jvmMain by getting {
       dependencies {
+        implementation("com.google.crypto.tink:tink:1.7.0") {
+          exclude("com.google.protobuf", module = "*")
+        }
         implementation("org.bouncycastle:bcprov-jdk16:1.45")
       }
     }
     val jvmTest by getting
     val androidMain by getting {
       dependencies {
+        implementation("com.google.crypto.tink:tink-android:1.7.0") {
+          exclude("com.google.protobuf", module = "*")
+        }
         implementation("joda-time:joda-time:2.9.9")
         api("com.google.firebase:firebase-core:21.1.1")
         api("com.google.firebase:firebase-messaging:23.1.0")

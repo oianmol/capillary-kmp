@@ -1,17 +1,22 @@
 package dev.baseio.security
 
+
 actual object CapillaryEncryption {
     actual fun encrypt(
         plaintext: ByteArray,
         publicKey: PublicKey,
-    ): ByteArray {
+    ): Pair<ByteArray, ByteArray> {
         return CipherWrapper(TRANSFORMATION_ASYMMETRIC).encrypt(plaintext, publicKey.publicKey)
     }
 
     actual fun decrypt(
-        ciphertext: ByteArray,
+        encryptedData: EncryptedData,
         privateKey: PrivateKey,
     ): ByteArray {
-        return CipherWrapper(TRANSFORMATION_ASYMMETRIC).decrypt(ciphertext, privateKey.privateKey)
+        return CipherWrapper(TRANSFORMATION_ASYMMETRIC).decrypt(
+            encryptedData.first,
+            encryptedData.second,
+            privateKey.privateKey
+        )
     }
 }
