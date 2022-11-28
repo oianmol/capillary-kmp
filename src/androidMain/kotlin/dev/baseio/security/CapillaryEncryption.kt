@@ -5,7 +5,7 @@ actual object CapillaryEncryption {
     actual fun encrypt(
         plaintext: ByteArray,
         publicKey: PublicKey,
-    ): Pair<ByteArray, ByteArray> {
+    ): EncryptedData {
         return CipherWrapper(TRANSFORMATION_ASYMMETRIC).encrypt(plaintext, publicKey.publicKey)
     }
 

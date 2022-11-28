@@ -14,6 +14,5 @@ pluginManagement {
         id("com.android.library") version "7.0.4"
     }
 }
-include(":capillaryios")
 rootProject.name = "capillary-kmp"
 

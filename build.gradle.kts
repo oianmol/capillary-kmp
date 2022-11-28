@@ -38,9 +38,10 @@ kotlin {
       isStatic = true
     }
 
-    pod("capillaryslack",){
-      source = path(rootProject.projectDir.absolutePath+"/capillaryios/")
+    pod("capillaryslack") {
+      source = path(rootProject.projectDir.absolutePath + "/capillaryios/")
     }
+
   }
 
   listOf(
@@ -48,10 +49,43 @@ kotlin {
     iosArm64(),
     iosSimulatorArm64()
   ).forEach {
+    val platform = if (it.targetName == "iosArm64") "iphoneos" else "iphonesimulator"
+
     if (it is KotlinNativeTargetWithSimulatorTests) {
       it.testRuns.forEach { tr ->
         tr.deviceId = properties["iosSimulatorName"] as? String ?: "iPhone 14"
       }
+    }
+
+    it.binaries.all {
+      linkerOpts("-ObjC")
+      //linkerOpts(opts)
+      linkerOpts("-L/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/${platform}")
+      linkerOpts("-L/usr/lib/swift/")
+
+      val projectDir = projectDir.absolutePath
+      listOf(
+        "Tink",
+      ).forEach { name ->
+        linkerOpts("-F$projectDir/capillaryios/Pods/Tink/Frameworks/$name")
+        linkerOpts(
+          "-rpath",
+          "$projectDir/capillaryios/Pods/Tink/Frameworks/$name"
+        )
+        linkerOpts(
+          "-framework", when (name) {
+            "Tink" -> "Tink"
+            else -> name
+          }
+        )
+      }
+    }
+
+    it.binaries.getTest(org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType.DEBUG).apply {
+      linkerOpts(
+        "-rpath",
+        "/usr/lib/swift"
+      )
     }
 
   }
@@ -70,18 +104,14 @@ kotlin {
     }
     val jvmMain by getting {
       dependencies {
-        implementation("com.google.crypto.tink:tink:1.7.0") {
-          exclude("com.google.protobuf", module = "*")
-        }
+        implementation("com.google.crypto.tink:tink:1.7.0")
         implementation("org.bouncycastle:bcprov-jdk16:1.45")
       }
     }
     val jvmTest by getting
     val androidMain by getting {
       dependencies {
-        implementation("com.google.crypto.tink:tink-android:1.7.0") {
-          exclude("com.google.protobuf", module = "*")
-        }
+        implementation("com.google.crypto.tink:tink-android:1.7.0")
         implementation("joda-time:joda-time:2.9.9")
         api("com.google.firebase:firebase-core:21.1.1")
         api("com.google.firebase:firebase-messaging:23.1.0")
