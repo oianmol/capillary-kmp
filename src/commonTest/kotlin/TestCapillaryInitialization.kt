@@ -24,6 +24,8 @@ class TestCapillaryInitialization {
               val encryptedChannelPrivateKey = encrypt(privateKeyJvm,publicKey)
 
               val decryptedChannelPrivateKey = decrypt(Pair(encryptedChannelPrivateKey.first, encryptedChannelPrivateKey.second), privateKey)
+              println(encryptedChannelPrivateKey.first.size)
+              println(encryptedChannelPrivateKey.second.size)
               val encrypted = encrypt( "anmolverma".encodeToByteArray(),  publicKeyJVM)
               assertNotNull(encrypted)
 
