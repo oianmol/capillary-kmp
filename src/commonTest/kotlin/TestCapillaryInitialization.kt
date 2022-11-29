@@ -11,7 +11,11 @@ class TestCapillaryInitialization {
             with(CapillaryInstances.getInstance("anmol", isTest = true)) {
                 val publicKeyUser = publicKey()
                 assertNotNull(publicKeyUser)
+                publicKeyUser.encoded.joinToString(",").run { println(this) }
+                println()
                 val privateKeyUser = privateKey()
+                privateKeyUser.encoded.joinToString(",").run { println(this) }
+
                 assertNotNull(privateKeyUser)
                 val encrypted = encrypt("Anmol".encodeToByteArray(), publicKeyUser)
                 val decrypted = decrypt(encrypted, privateKeyUser)
