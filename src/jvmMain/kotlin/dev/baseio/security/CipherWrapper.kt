@@ -6,46 +6,53 @@ import java.io.IOException
 import java.security.GeneralSecurityException
 import java.security.Key
 import javax.crypto.Cipher
+import javax.crypto.spec.OAEPParameterSpec
 
 class CipherWrapper(private val transformation: String) {
-    private val SYMMETRIC_KEY_TEMPLATE = KeyTemplates.get("AES128_GCM")
-    private val emptyEad = ByteArray(0)
+  private val SYMMETRIC_KEY_TEMPLATE = KeyTemplates.get("AES128_GCM")
+  private val emptyEad = ByteArray(0)
+  private val oaepParamSpec = OAEPParameterSpec(
+    "SHA-512",
+    OAEPParameterSpec.DEFAULT.mgfAlgorithm,
+    OAEPParameterSpec.DEFAULT.mgfParameters,
+    OAEPParameterSpec.DEFAULT.pSource
+  )
 
-    fun encrypt(messageData: ByteArray, key: Key?): Pair<ByteArray, ByteArray> {
-        val cipher: Cipher = Cipher.getInstance(transformation)
-        cipher.init(Cipher.ENCRYPT_MODE, key)
+  fun encrypt(messageData: ByteArray, key: Key?): Pair<ByteArray, ByteArray> {
+    val cipher: Cipher = Cipher.getInstance(transformation)
+    cipher.init(Cipher.ENCRYPT_MODE, key, oaepParamSpec)
 
-        val symmetricKeyHandle = KeysetHandle.generateNew(SYMMETRIC_KEY_TEMPLATE)
-        val symmetricKeyOutputStream = ByteArrayOutputStream()
-        try {
-            CleartextKeysetHandle.write(
-                symmetricKeyHandle, BinaryKeysetWriter.withOutputStream(symmetricKeyOutputStream)
-            )
-        } catch (e: IOException) {
-            throw GeneralSecurityException("hybrid rsa encryption failed: ", e)
-        }
-        val symmetricKeyBytes = symmetricKeyOutputStream.toByteArray()
-        val symmetricKeyCiphertext = cipher.doFinal(symmetricKeyBytes)
-
-        // Generate payload ciphertext.
-        val aead = symmetricKeyHandle.getPrimitive(Aead::class.java)
-        val payloadCiphertext = aead.encrypt(messageData, emptyEad)
-        return Pair(symmetricKeyCiphertext, payloadCiphertext)
+    val symmetricKeyHandle = KeysetHandle.generateNew(SYMMETRIC_KEY_TEMPLATE)
+    val symmetricKeyOutputStream = ByteArrayOutputStream()
+    try {
+      CleartextKeysetHandle.write(
+        symmetricKeyHandle, BinaryKeysetWriter.withOutputStream(symmetricKeyOutputStream)
+      )
+    } catch (e: IOException) {
+      throw GeneralSecurityException("hybrid rsa encryption failed: ", e)
     }
+    val symmetricKeyBytes = symmetricKeyOutputStream.toByteArray()
+    val symmetricKeyCiphertext = cipher.doFinal(symmetricKeyBytes)
 
-    fun decrypt(symmetricKeyCiphertext: ByteArray, payloadCiphertext: ByteArray, key: Key?): ByteArray {
-        val rsaCipher = Cipher.getInstance(transformation)
-        rsaCipher.init(Cipher.DECRYPT_MODE, key)
-        // Retrieve symmetric key.
-        val symmetricKeyBytes = rsaCipher.doFinal(symmetricKeyCiphertext)
-        val symmetricKeyHandle: KeysetHandle = try {
-            CleartextKeysetHandle.read(BinaryKeysetReader.withBytes(symmetricKeyBytes))
-        } catch (e: IOException) {
-            throw GeneralSecurityException("hybrid rsa decryption failed: ", e)
-        }
-        // Retrieve and return plaintext.
-        return symmetricKeyHandle
-            .getPrimitive(Aead::class.java)
-            .decrypt(payloadCiphertext, emptyEad)
+    // Generate payload ciphertext.
+    val aead = symmetricKeyHandle.getPrimitive(Aead::class.java)
+    val payloadCiphertext = aead.encrypt(messageData, emptyEad)
+    return Pair(symmetricKeyCiphertext, payloadCiphertext)
+  }
+
+  fun decrypt(symmetricKeyCiphertext: ByteArray, payloadCiphertext: ByteArray, key: Key?): ByteArray {
+    val rsaCipher = Cipher.getInstance(transformation)
+    rsaCipher.init(Cipher.DECRYPT_MODE, key, oaepParamSpec)
+    // Retrieve symmetric key.
+    val symmetricKeyBytes = rsaCipher.doFinal(symmetricKeyCiphertext)
+    val symmetricKeyHandle: KeysetHandle = try {
+      CleartextKeysetHandle.read(BinaryKeysetReader.withBytes(symmetricKeyBytes))
+    } catch (e: IOException) {
+      throw GeneralSecurityException("hybrid rsa decryption failed: ", e)
     }
+    // Retrieve and return plaintext.
+    return symmetricKeyHandle
+      .getPrimitive(Aead::class.java)
+      .decrypt(payloadCiphertext, emptyEad)
+  }
 }
