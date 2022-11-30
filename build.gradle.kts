@@ -102,7 +102,12 @@ kotlin {
         implementation(kotlin("test"))
       }
     }
+
+    val androidJvmCommon by creating{
+      dependsOn(commonMain)
+    }
     val jvmMain by getting {
+      dependsOn(androidJvmCommon)
       dependencies {
         implementation("com.google.crypto.tink:tink:1.7.0")
         implementation("org.bouncycastle:bcprov-jdk16:1.45")
@@ -110,6 +115,7 @@ kotlin {
     }
     val jvmTest by getting
     val androidMain by getting {
+      dependsOn(androidJvmCommon)
       dependencies {
         implementation("com.google.crypto.tink:tink-android:1.7.0")
         implementation("joda-time:joda-time:2.9.9")

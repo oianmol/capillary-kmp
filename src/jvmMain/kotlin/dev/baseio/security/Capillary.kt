@@ -2,8 +2,6 @@ package dev.baseio.security
 
 import com.google.crypto.tink.aead.AeadConfig
 import com.google.crypto.tink.signature.SignatureConfig
-import org.bouncycastle.jce.provider.BouncyCastleProvider
-import java.security.Security
 
 actual class Capillary actual constructor(chainId: String) {
   val keychainId = "rsa_ecdsa_jvm$chainId"

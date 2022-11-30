@@ -1,22 +1,66 @@
 package dev.baseio.security
 
+import com.google.crypto.tink.*
+import java.io.ByteArrayOutputStream
+import java.io.IOException
+import java.security.GeneralSecurityException
+import java.security.spec.MGF1ParameterSpec
+import javax.crypto.Cipher
+import javax.crypto.spec.OAEPParameterSpec
+import javax.crypto.spec.PSource
+
 
 actual object CapillaryEncryption {
-    actual fun encrypt(
-        plaintext: ByteArray,
-        publicKey: PublicKey,
-    ): Pair<ByteArray, ByteArray> {
-        return CipherWrapper(TRANSFORMATION_ASYMMETRIC).encrypt(plaintext, publicKey.publicKey)
-    }
+  private val SYMMETRIC_KEY_TEMPLATE = KeyTemplates.get("AES128_GCM")
+  private val emptyEad = ByteArray(0)
+  private val oaepParamSpec = OAEPParameterSpec(
+    "SHA-256",
+    "MGF1",
+    MGF1ParameterSpec.SHA1,
+    PSource.PSpecified.DEFAULT
+  )
 
-    actual fun decrypt(
-        encryptedData: EncryptedData,
-        privateKey: PrivateKey,
-    ): ByteArray {
-        return CipherWrapper(TRANSFORMATION_ASYMMETRIC).decrypt(
-            encryptedData.first,
-            encryptedData.second,
-            privateKey.privateKey
-        )
+  actual fun encrypt(
+    plaintext: ByteArray,
+    publicKey: PublicKey,
+  ): Pair<ByteArray, ByteArray> {
+    val cipher: Cipher = Cipher.getInstance(TRANSFORMATION_ASYMMETRIC)
+    cipher.init(Cipher.ENCRYPT_MODE, publicKey.publicKey, oaepParamSpec)
+
+    val symmetricKeyHandle = KeysetHandle.generateNew(SYMMETRIC_KEY_TEMPLATE)
+    val symmetricKeyOutputStream = ByteArrayOutputStream()
+    try {
+      CleartextKeysetHandle.write(
+        symmetricKeyHandle, BinaryKeysetWriter.withOutputStream(symmetricKeyOutputStream)
+      )
+    } catch (e: IOException) {
+      throw GeneralSecurityException("hybrid rsa encryption failed: ", e)
     }
+    val symmetricKeyBytes = symmetricKeyOutputStream.toByteArray()
+    val symmetricKeyCiphertext = cipher.doFinal(symmetricKeyBytes)
+
+    // Generate payload ciphertext.
+    val aead = symmetricKeyHandle.getPrimitive(Aead::class.java)
+    val payloadCiphertext = aead.encrypt(plaintext, emptyEad)
+    return Pair(symmetricKeyCiphertext, payloadCiphertext)
+  }
+
+  actual fun decrypt(
+    encryptedData: EncryptedData,
+    privateKey: PrivateKey,
+  ): ByteArray {
+    val rsaCipher = Cipher.getInstance(TRANSFORMATION_ASYMMETRIC)
+    rsaCipher.init(Cipher.DECRYPT_MODE, privateKey.privateKey, oaepParamSpec)
+    // Retrieve symmetric key.
+    val symmetricKeyBytes = rsaCipher.doFinal(encryptedData.first)
+    val symmetricKeyHandle: KeysetHandle = try {
+      CleartextKeysetHandle.read(BinaryKeysetReader.withBytes(symmetricKeyBytes))
+    } catch (e: IOException) {
+      throw GeneralSecurityException("hybrid rsa decryption failed: ", e)
+    }
+    // Retrieve and return plaintext.
+    return symmetricKeyHandle
+      .getPrimitive(Aead::class.java)
+      .decrypt(encryptedData.second, emptyEad)
+  }
 }
