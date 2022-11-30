@@ -30,7 +30,7 @@ object AndroidKeyStoreRsaUtils {
         )
             .setBlockModes(KeyProperties.BLOCK_MODE_ECB)
             .setDigests(KeyProperties.DIGEST_SHA256)
-            .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_RSA_OAEP)
+            .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_RSA_PKCS1)
             .setKeySize(2048)
 
         spec = specBuilder.build()
