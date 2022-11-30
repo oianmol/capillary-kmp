@@ -1,15 +1,11 @@
+@file:JvmName("CapillaryEncryptionAndroid")
 package dev.baseio.security
 
 import com.google.crypto.tink.*
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.security.GeneralSecurityException
-import java.security.spec.MGF1ParameterSpec
-import java.util.*
 import javax.crypto.Cipher
-import javax.crypto.spec.OAEPParameterSpec
-import javax.crypto.spec.PSource
-
 
 actual object CapillaryEncryption {
   private val SYMMETRIC_KEY_TEMPLATE = KeyTemplates.get("AES128_GCM")
