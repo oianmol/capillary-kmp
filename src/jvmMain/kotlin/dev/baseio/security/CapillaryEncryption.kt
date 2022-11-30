@@ -1,3 +1,4 @@
+@file:JvmName("CapillaryEncryptionJAva")
 package dev.baseio.security
 
 import com.google.crypto.tink.*
@@ -5,6 +6,7 @@ import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.security.GeneralSecurityException
 import java.security.spec.MGF1ParameterSpec
+import java.util.Base64
 import javax.crypto.Cipher
 import javax.crypto.spec.OAEPParameterSpec
 import javax.crypto.spec.PSource
@@ -23,7 +25,7 @@ actual object CapillaryEncryption {
   actual fun encrypt(
     plaintext: ByteArray,
     publicKey: PublicKey,
-  ): Pair<ByteArray, ByteArray> {
+  ): Pair<String, String> {
     val cipher: Cipher = Cipher.getInstance(TRANSFORMATION_ASYMMETRIC)
     cipher.init(Cipher.ENCRYPT_MODE, publicKey.publicKey)
 
@@ -42,7 +44,7 @@ actual object CapillaryEncryption {
     // Generate payload ciphertext.
     val aead = symmetricKeyHandle.getPrimitive(Aead::class.java)
     val payloadCiphertext = aead.encrypt(plaintext, emptyEad)
-    return Pair(symmetricKeyCiphertext, payloadCiphertext)
+    return Pair(symmetricKeyCiphertext.base64(), payloadCiphertext.base64())
   }
 
   actual fun decrypt(
@@ -52,7 +54,7 @@ actual object CapillaryEncryption {
     val rsaCipher = Cipher.getInstance(TRANSFORMATION_ASYMMETRIC)
     rsaCipher.init(Cipher.DECRYPT_MODE, privateKey.privateKey)
     // Retrieve symmetric key.
-    val symmetricKeyBytes = rsaCipher.doFinal(encryptedData.first)
+    val symmetricKeyBytes = rsaCipher.doFinal(encryptedData.first.frombase64())
     val symmetricKeyHandle: KeysetHandle = try {
       CleartextKeysetHandle.read(BinaryKeysetReader.withBytes(symmetricKeyBytes))
     } catch (e: IOException) {
@@ -61,6 +63,14 @@ actual object CapillaryEncryption {
     // Retrieve and return plaintext.
     return symmetricKeyHandle
       .getPrimitive(Aead::class.java)
-      .decrypt(encryptedData.second, emptyEad)
+      .decrypt(encryptedData.second.frombase64(), emptyEad)
   }
+}
+
+private fun String.frombase64(): ByteArray? {
+  return Base64.getDecoder().decode(this)
+}
+
+private fun ByteArray.base64(): String {
+  return Base64.getEncoder().encodeToString(this)
 }

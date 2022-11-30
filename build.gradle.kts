@@ -95,6 +95,8 @@ kotlin {
     val commonMain by getting {
       dependencies {
         implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+        implementation("com.squareup.okio:okio:3.2.0")
+
       }
     }
     val commonTest by getting {
@@ -103,11 +105,8 @@ kotlin {
       }
     }
 
-    val androidJvmCommon by creating{
-      dependsOn(commonMain)
-    }
+
     val jvmMain by getting {
-      dependsOn(androidJvmCommon)
       dependencies {
         implementation("com.google.crypto.tink:tink:1.7.0")
         implementation("org.bouncycastle:bcprov-jdk16:1.45")
@@ -115,7 +114,6 @@ kotlin {
     }
     val jvmTest by getting
     val androidMain by getting {
-      dependsOn(androidJvmCommon)
       dependencies {
         implementation("com.google.crypto.tink:tink-android:1.7.0")
         implementation("joda-time:joda-time:2.9.9")
