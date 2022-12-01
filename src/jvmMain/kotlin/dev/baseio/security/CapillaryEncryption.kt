@@ -1,4 +1,5 @@
 @file:JvmName("CapillaryEncryptionJAva")
+
 package dev.baseio.security
 
 import com.google.crypto.tink.*
@@ -16,7 +17,7 @@ actual object CapillaryEncryption {
   private val SYMMETRIC_KEY_TEMPLATE = KeyTemplates.get("AES128_GCM")
   private val emptyEad = ByteArray(0)
   private val oaepParamSpec = OAEPParameterSpec(
-    "SHA-256",
+    "SHA-512",
     "MGF1",
     MGF1ParameterSpec.SHA1,
     PSource.PSpecified.DEFAULT
@@ -27,7 +28,7 @@ actual object CapillaryEncryption {
     publicKey: PublicKey,
   ): Pair<String, String> {
     val cipher: Cipher = Cipher.getInstance(TRANSFORMATION_ASYMMETRIC)
-    cipher.init(Cipher.ENCRYPT_MODE, publicKey.publicKey)
+    cipher.init(Cipher.ENCRYPT_MODE, publicKey.publicKey, oaepParamSpec)
 
     val symmetricKeyHandle = KeysetHandle.generateNew(SYMMETRIC_KEY_TEMPLATE)
     val symmetricKeyOutputStream = ByteArrayOutputStream()
@@ -52,7 +53,7 @@ actual object CapillaryEncryption {
     privateKey: PrivateKey,
   ): ByteArray {
     val rsaCipher = Cipher.getInstance(TRANSFORMATION_ASYMMETRIC)
-    rsaCipher.init(Cipher.DECRYPT_MODE, privateKey.privateKey)
+    rsaCipher.init(Cipher.DECRYPT_MODE, privateKey.privateKey, oaepParamSpec)
     // Retrieve symmetric key.
     val symmetricKeyBytes = rsaCipher.doFinal(encryptedData.first.frombase64())
     val symmetricKeyHandle: KeysetHandle = try {

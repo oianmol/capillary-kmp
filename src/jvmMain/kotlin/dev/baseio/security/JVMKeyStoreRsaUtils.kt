@@ -5,11 +5,18 @@ import java.security.*
 import java.security.interfaces.RSAPrivateKey
 import java.security.interfaces.RSAPublicKey
 import java.security.spec.*
+import javax.crypto.spec.OAEPParameterSpec
+import javax.crypto.spec.PSource
 
 object JVMKeyStoreRsaUtils {
     private const val KEY_ALIAS_SUFFIX_PRIVATE = "_capillary_rsa_private"
     private const val KEY_ALIAS_SUFFIX_PUBLIC = "_capillary_rsa_public"
-
+    private val oaepParamSpec = OAEPParameterSpec(
+        "SHA-512",
+        "MGF1",
+        MGF1ParameterSpec.SHA1,
+        PSource.PSpecified.DEFAULT
+    )
     fun generateKeyPair(chainId: String) {
         if (File(pubicKeyFile(chainId)).exists()) {
             return
@@ -17,7 +24,7 @@ object JVMKeyStoreRsaUtils {
         val rsaSpec = RSAKeyGenParameterSpec(KEY_SIZE, RSAKeyGenParameterSpec.F4)
 
         val keyPairGenerator = KeyPairGenerator.getInstance("RSA")
-        keyPairGenerator.initialize(rsaSpec)
+        keyPairGenerator.initialize(oaepParamSpec)
         val keyPair = keyPairGenerator.generateKeyPair()
 
         val rsaPublicKey: RSAPublicKey = keyPair.public as RSAPublicKey
