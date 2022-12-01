@@ -17,8 +17,8 @@ actual object CapillaryEncryption {
         autoreleasepool {
             val encryptedResponse = CapillaryIOS.encryptWithData(plaintext.toData(), publicKey.encoded.toData())
             return EncryptedData(
-                encryptedResponse.firstItem()?.toByteArrayFromNSData()?.tobase64()?:"",
-                encryptedResponse.secondItem()?.toByteArrayFromNSData()?.tobase64()?:""
+                encryptedResponse.firstItem()?:"",
+                encryptedResponse.secondItem()?:""
             )
         }
     }
@@ -30,7 +30,7 @@ actual object CapillaryEncryption {
         autoreleasepool {
             NSData
             return CapillaryIOS.decryptWithSymmetricKeyCiphertext(
-                encryptedData.first.frombase64().toData(), encryptedData.second.frombase64().toData(),
+                encryptedData.first, encryptedData.second,
                 privateKey.encodedBytes.toData()
             )!!.toByteArrayFromNSData()
         }
@@ -38,21 +38,8 @@ actual object CapillaryEncryption {
 
 }
 
-fun String.nsdata(): NSData =
-    NSString.create(string = this).dataUsingEncoding(NSUTF8StringEncoding)!!
-
-fun NSData.string(): String? =
-    NSString.create(data = this, encoding = NSUTF8StringEncoding)?.toString()
-
-private fun String.frombase64(): ByteArray {
-    return base64Decoded(this)
-}
-
 private fun ByteArray.tobase64(): String {
     return base64Encoded(this)
 }
 
-
 fun base64Encoded(input: ByteArray): String = input.toByteString().base64()
-
-fun base64Decoded(input: String): ByteArray = input.decodeBase64()!!.toByteArray()
