@@ -7,8 +7,7 @@ actual class Capillary actual constructor(chainId: String) {
   private val keychainId = "rsa_ios$chainId"
 
   actual fun initialize(isTest: Boolean) {
-    cocoapods.capillaryslack.CapillaryIOS.setIsTestWithIsTest(isTest)
-    cocoapods.capillaryslack.CapillaryIOS.initNowWithChainId(keychainId)
+    cocoapods.capillaryslack.CapillaryIOS.initNowWithChainId(keychainId,isTest)
   }
 
   actual fun publicKey(): PublicKey {
