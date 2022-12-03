@@ -6,20 +6,11 @@ import com.google.crypto.tink.*
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.security.GeneralSecurityException
-import java.security.spec.MGF1ParameterSpec
 import javax.crypto.Cipher
-import javax.crypto.spec.OAEPParameterSpec
-import javax.crypto.spec.PSource
 
 actual object CapillaryEncryption {
   private val SYMMETRIC_KEY_TEMPLATE = KeyTemplates.get("AES128_GCM")
   private val emptyEad = ByteArray(0)
-  private val oaepParamSpec = OAEPParameterSpec(
-    "SHA-512",
-    OAEPParameterSpec.DEFAULT.mgfAlgorithm,
-    OAEPParameterSpec.DEFAULT.mgfParameters,
-    OAEPParameterSpec.DEFAULT.pSource
-  )
 
   actual fun encrypt(
     plaintext: ByteArray,
@@ -67,9 +58,9 @@ actual object CapillaryEncryption {
 }
 
 private fun String.frombase64(): ByteArray? {
-  return android.util.Base64.decode(this, android.util.Base64.DEFAULT)
+  return android.util.Base64.decode(this, android.util.Base64.NO_WRAP)
 }
 
 private fun ByteArray.base64(): String {
-  return android.util.Base64.encodeToString(this, android.util.Base64.DEFAULT)
+  return android.util.Base64.encodeToString(this, android.util.Base64.NO_WRAP)
 }
