@@ -10,36 +10,29 @@ import okio.ByteString.Companion.toByteString
 import platform.Foundation.*
 
 actual object CapillaryEncryption {
-    actual fun encrypt(
-        plaintext: ByteArray,
-        publicKey: PublicKey,
-    ): EncryptedData {
-        autoreleasepool {
-            val encryptedResponse = CapillaryIOS.encryptWithData(plaintext.toData(), publicKey.encoded.toData())
-            return EncryptedData(
-                encryptedResponse.firstItem()?:"",
-                encryptedResponse.secondItem()?:""
-            )
-        }
+  actual fun encrypt(
+    plaintext: ByteArray,
+    publicKey: PublicKey,
+  ): EncryptedData {
+    autoreleasepool {
+      val encryptedResponse = CapillaryIOS.encryptWithData(plaintext.toData(), publicKey.encoded.toData())
+      return EncryptedData(
+        encryptedResponse.firstItem() ?: "",
+        encryptedResponse.secondItem() ?: ""
+      )
     }
+  }
 
-    actual fun decrypt(
-        encryptedData: EncryptedData,
-        privateKey: PrivateKey,
-    ): ByteArray {
-        autoreleasepool {
-            NSData
-            return CapillaryIOS.decryptWithSymmetricKeyCiphertext(
-                encryptedData.first, encryptedData.second,
-                privateKey.encodedBytes.toData()
-            )!!.toByteArrayFromNSData()
-        }
+  actual fun decrypt(
+    encryptedData: EncryptedData,
+    privateKey: PrivateKey,
+  ): ByteArray {
+    autoreleasepool {
+      NSData
+      return CapillaryIOS.decryptWithSymmetricKeyCiphertext(
+        encryptedData.first, encryptedData.second,
+        privateKey.encodedBytes.toData()
+      )!!.toByteArrayFromNSData()
     }
-
+  }
 }
-
-private fun ByteArray.tobase64(): String {
-    return base64Encoded(this)
-}
-
-fun base64Encoded(input: ByteArray): String = input.toByteString().base64()

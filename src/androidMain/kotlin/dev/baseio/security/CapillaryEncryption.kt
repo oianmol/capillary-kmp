@@ -16,9 +16,9 @@ actual object CapillaryEncryption {
   private val emptyEad = ByteArray(0)
   private val oaepParamSpec = OAEPParameterSpec(
     "SHA-512",
-    "MGF1",
-    MGF1ParameterSpec.SHA1,
-    PSource.PSpecified.DEFAULT
+    OAEPParameterSpec.DEFAULT.mgfAlgorithm,
+    OAEPParameterSpec.DEFAULT.mgfParameters,
+    OAEPParameterSpec.DEFAULT.pSource
   )
 
   actual fun encrypt(

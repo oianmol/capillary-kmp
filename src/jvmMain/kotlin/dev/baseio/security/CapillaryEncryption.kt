@@ -18,9 +18,9 @@ actual object CapillaryEncryption {
   private val emptyEad = ByteArray(0)
   private val oaepParamSpec = OAEPParameterSpec(
     "SHA-512",
-    "MGF1",
-    MGF1ParameterSpec.SHA1,
-    PSource.PSpecified.DEFAULT
+    OAEPParameterSpec.DEFAULT.mgfAlgorithm,
+    OAEPParameterSpec.DEFAULT.mgfParameters,
+    OAEPParameterSpec.DEFAULT.pSource
   )
 
   actual fun encrypt(
@@ -28,7 +28,7 @@ actual object CapillaryEncryption {
     publicKey: PublicKey,
   ): Pair<String, String> {
     val cipher: Cipher = Cipher.getInstance(TRANSFORMATION_ASYMMETRIC)
-    cipher.init(Cipher.ENCRYPT_MODE, publicKey.publicKey, oaepParamSpec)
+    cipher.init(Cipher.ENCRYPT_MODE, publicKey.publicKey,oaepParamSpec)
 
     val symmetricKeyHandle = KeysetHandle.generateNew(SYMMETRIC_KEY_TEMPLATE)
     val symmetricKeyOutputStream = ByteArrayOutputStream()
@@ -53,7 +53,7 @@ actual object CapillaryEncryption {
     privateKey: PrivateKey,
   ): ByteArray {
     val rsaCipher = Cipher.getInstance(TRANSFORMATION_ASYMMETRIC)
-    rsaCipher.init(Cipher.DECRYPT_MODE, privateKey.privateKey, oaepParamSpec)
+    rsaCipher.init(Cipher.DECRYPT_MODE, privateKey.privateKey,oaepParamSpec)
     // Retrieve symmetric key.
     val symmetricKeyBytes = rsaCipher.doFinal(encryptedData.first.frombase64())
     val symmetricKeyHandle: KeysetHandle = try {
