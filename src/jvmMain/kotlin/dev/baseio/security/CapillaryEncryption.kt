@@ -28,7 +28,7 @@ actual object CapillaryEncryption {
     publicKey: PublicKey,
   ): Pair<String, String> {
     val cipher: Cipher = Cipher.getInstance(TRANSFORMATION_ASYMMETRIC)
-    cipher.init(Cipher.ENCRYPT_MODE, publicKey.publicKey,oaepParamSpec)
+    cipher.init(Cipher.ENCRYPT_MODE, publicKey.publicKey)
 
     val symmetricKeyHandle = KeysetHandle.generateNew(SYMMETRIC_KEY_TEMPLATE)
     val symmetricKeyOutputStream = ByteArrayOutputStream()
@@ -53,7 +53,7 @@ actual object CapillaryEncryption {
     privateKey: PrivateKey,
   ): ByteArray {
     val rsaCipher = Cipher.getInstance(TRANSFORMATION_ASYMMETRIC)
-    rsaCipher.init(Cipher.DECRYPT_MODE, privateKey.privateKey,oaepParamSpec)
+    rsaCipher.init(Cipher.DECRYPT_MODE, privateKey.privateKey)
     // Retrieve symmetric key.
     val symmetricKeyBytes = rsaCipher.doFinal(encryptedData.first.frombase64())
     val symmetricKeyHandle: KeysetHandle = try {
