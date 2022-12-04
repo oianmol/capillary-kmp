@@ -39,7 +39,7 @@ kotlin {
     }
 
     pod("capillaryslack") {
-      source = path(rootProject.projectDir.absolutePath + "/capillaryios/")
+      source = path(rootProject.projectDir.absolutePath + "/encryptionlib/capillaryios/")
     }
 
   }
@@ -67,10 +67,10 @@ kotlin {
       listOf(
         "Tink",
       ).forEach { name ->
-        linkerOpts("-F$projectDir/capillaryios/Pods/Tink/Frameworks/$name")
+        linkerOpts("-F$projectDir/encryptionlib/capillaryios/Pods/Tink/Frameworks/$name")
         linkerOpts(
           "-rpath",
-          "$projectDir/capillaryios/Pods/Tink/Frameworks/$name"
+          "$projectDir/encryptionlib/capillaryios/Pods/Tink/Frameworks/$name"
         )
         linkerOpts(
           "-framework", when (name) {
