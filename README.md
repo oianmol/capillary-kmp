@@ -1,2 +1,2 @@
 # capillary-kmp
-A Kotlin Multiplatform library to support end to end encryption with Push notifications!
+A Kotlin Multiplatform library to support end to end encryption!
