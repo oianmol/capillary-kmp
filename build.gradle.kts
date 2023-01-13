@@ -39,7 +39,7 @@ kotlin {
     }
 
     pod("capillaryslack") {
-      source = path(rootProject.projectDir.absolutePath + "/encryptionlib/capillaryios/")
+      source = path(rootProject.projectDir.absolutePath + "/capillaryios/")
     }
 
   }
