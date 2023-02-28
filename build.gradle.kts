@@ -62,23 +62,6 @@ kotlin {
       //linkerOpts(opts)
       linkerOpts("-L/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/${platform}")
       linkerOpts("-L/usr/lib/swift/")
-
-      val projectDir = projectDir.absolutePath
-      listOf(
-        "Tink",
-      ).forEach { name ->
-        linkerOpts("-F$projectDir/encryptionlib/capillaryios/Pods/Tink/Frameworks/$name")
-        linkerOpts(
-          "-rpath",
-          "$projectDir/encryptionlib/capillaryios/Pods/Tink/Frameworks/$name"
-        )
-        linkerOpts(
-          "-framework", when (name) {
-            "Tink" -> "Tink"
-            else -> name
-          }
-        )
-      }
     }
 
     it.binaries.getTest(org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType.DEBUG).apply {
@@ -108,14 +91,12 @@ kotlin {
 
     val jvmMain by getting {
       dependencies {
-        implementation("com.google.crypto.tink:tink:1.7.0")
         implementation("org.bouncycastle:bcprov-jdk16:1.45")
       }
     }
     val jvmTest by getting
     val androidMain by getting {
       dependencies {
-        implementation("com.google.crypto.tink:tink-android:1.7.0")
         implementation("joda-time:joda-time:2.9.9")
         api("com.google.firebase:firebase-core:21.1.1")
         api("com.google.firebase:firebase-messaging:23.1.0")

@@ -1,18 +1,14 @@
 package dev.baseio.security
 
-import com.google.crypto.tink.aead.AeadConfig
-import com.google.crypto.tink.signature.SignatureConfig
 import java.io.IOException
 import java.security.GeneralSecurityException
 import java.security.KeyStore
 
 actual class Capillary actual constructor(chainId: String) {
-  var keyStore: KeyStore = KeyStore.getInstance(AndroidSecurityProvider.KEYSTORE_ANDROID)
+  private var keyStore: KeyStore = KeyStore.getInstance(AndroidSecurityProvider.KEYSTORE_ANDROID)
   private val keychainId = "rsa_ecdsa_android$chainId"
 
   actual fun initialize(isTest: Boolean) {
-    com.google.crypto.tink.Config.register(SignatureConfig.LATEST)
-    AeadConfig.register()
     try {
       keyStore.load(null)
       AndroidKeyStoreRsaUtils.generateKeyPair(keychainId, keyStore)
