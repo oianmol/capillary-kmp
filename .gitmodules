@@ -1,3 +1,4 @@
 [submodule "capillaryios"]
 	path = capillaryios
 	url = https://github.com/oianmol/slack_capillary_ios.git
+    branch = master
