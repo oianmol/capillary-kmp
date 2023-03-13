@@ -1,10 +1,9 @@
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithSimulatorTests
 
 plugins {
-  id("com.android.library")
-  kotlin("multiplatform")
-  kotlin("native.cocoapods")
-  id("maven-publish")
+  id(libs.plugins.kotlin.native.cocoapods.get().pluginId)
+  id(libs.plugins.kotlin.multiplatform.get().pluginId)
+  alias(libs.plugins.android.library)
 }
 
 group = "dev.baseio.slackcrypto"
@@ -39,7 +38,7 @@ kotlin {
     }
 
     pod("capillaryslack") {
-      source = path(rootProject.projectDir.absolutePath + "/capillaryios/")
+      source = path(rootProject.projectDir.absolutePath + "/slack_capillary_ios/")
     }
 
   }
