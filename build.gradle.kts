@@ -16,6 +16,17 @@ repositories {
   mavenLocal()
 }
 
+val GITHUB_USER: String by project
+val GITHUB_TOKEN: String by project
+
+publishing {
+  repositories {
+    maven {
+      setUrl("https://maven.pkg.github.com/oianmol/capillary-kmp")
+    }
+  }
+}
+
 kotlin {
   jvm {
     compilations.all {
@@ -26,7 +37,8 @@ kotlin {
     }
   }
   android {
-    publishLibraryVariants("release")
+    publishLibraryVariants("release", "debug")
+    publishLibraryVariantsGroupedByFlavor = true
   }
 
   cocoapods {
