@@ -21,8 +21,5 @@ jobs:
         with:
           java-version: 11
 
-      - name: Build
-        run: ./gradlew assemble --stacktrace
-
       - name: Release library
-        run: ./gradlew publish
+        run: ./gradlew publish -PGITHUB_USER=${{ secrets.CURRENT_GITHUB_USER }} -PGITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}

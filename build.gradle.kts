@@ -1,9 +1,10 @@
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithSimulatorTests
 
 plugins {
-  id(libs.plugins.kotlin.native.cocoapods.get().pluginId)
-  id(libs.plugins.kotlin.multiplatform.get().pluginId)
-  alias(libs.plugins.android.library)
+  id("com.android.library")
+  kotlin("multiplatform")
+  kotlin("native.cocoapods")
+  id("maven-publish")
 }
 
 group = "dev.baseio.slackcrypto"
@@ -15,13 +16,17 @@ repositories {
   mavenLocal()
 }
 
-val GITHUB_USER: String by project
-val GITHUB_TOKEN: String by project
+val GITHUB_USER: String? by project
+val GITHUB_TOKEN: String? by project
 
 publishing {
   repositories {
     maven {
       setUrl("https://maven.pkg.github.com/oianmol/capillary-kmp")
+      credentials {
+        username = GITHUB_USER ?: "oianmol"
+        password = GITHUB_TOKEN ?: ""
+      }
     }
   }
 }
@@ -36,8 +41,7 @@ kotlin {
     }
   }
   android {
-    publishLibraryVariants("release", "debug")
-    publishLibraryVariantsGroupedByFlavor = true
+    publishLibraryVariants("release")
   }
 
   cocoapods {
@@ -50,7 +54,7 @@ kotlin {
     }
 
     pod("capillaryslack") {
-      source = path(rootProject.projectDir.absolutePath + "/slack_capillary_ios/")
+      source = path(rootProject.projectDir.absolutePath + "/capillaryios/")
     }
 
   }
